@@ -1,0 +1,24 @@
+# Ignore build and release directories
+bin/
+obj/
+
+# Logs and debug files
+*.log
+
+# Configuration and API keys
+Config.toml
+
+# Ignore package directories
+packages/
+*.nupkg
+*.snupkg
+
+# Ignore backup and temporary files
+*.tmp
+*.bak
+~$*
+
+# Compiled files
+*.dll
+*.exe
+*.pdb
