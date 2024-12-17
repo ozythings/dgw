@@ -1,17 +1,11 @@
-using System.Collections.Generic;
-using System.Diagnostics.Metrics;
-using System.Net;
-using System.Security.Policy;
-using System.Text.Json;
-using System.Windows.Forms;
-using static System.Windows.Forms.AxHost;
 using dgw.Weather;
-using System.Runtime.CompilerServices;
+using dgw.Metadata;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using System.Diagnostics;
 using Tomlyn;
 using Tomlyn.Model;
+using System.Reflection;
 
 namespace dgw {
 
@@ -23,6 +17,7 @@ namespace dgw {
         private string config_path = "Config.toml";
         private string api_key;
 
+        private static bool city_flag = true;
 
         private int limit = 1;
 
@@ -46,12 +41,15 @@ namespace dgw {
             cartesianChart1.ZoomMode = LiveChartsCore.Measure.ZoomAndPanMode.X;
 
             get_api_key();
-            this.reorder_daylist();
+            this.reorder_daylist("Wednesday");
+
             string[] cities = { "Amasya", "Ankara", "Istanbul" };
 
             foreach (string city in cities) {
                 comboBox1.Items.Add(city);
             }
+
+            comboBox1.ForeColor = Color.Gray;
 
         }
 
@@ -60,6 +58,7 @@ namespace dgw {
 
             progressBar2.Value = 0;
 
+            this.reorder_daylist();
             await init_data();
 
             progressBar2.Value = 100;
@@ -109,7 +108,7 @@ namespace dgw {
                 // this gets weather data using lat and lon
                 string weatherUrl = $"https://api.openweathermap.org/data/3.0/onecall?lat={location.lat}&lon={location.lon}&appid={api_key}&units=metric";
                 WeatherClient weatherClient = new WeatherClient();
-                WeatherResponse weather = await weatherClient.GetWeatherAsync(weatherUrl);
+                WeatherResponse weather = await weatherClient.get_weather_async(weatherUrl);
 
                 if (weather != null) {
 
@@ -142,7 +141,7 @@ namespace dgw {
                     // this changes the top information
                     //if (weather.current.rain.oneHour != null) {
                     //    label18.Text = $"Precipitation: {weather.current.rain.oneHour}";
-                    //}
+                    ///
                     label19.Text = $"Humidity: {weather.current.humidity}";
                     label21.Text = $"Wind: {weather.current.wind_speed} m/s";
                     label22.Text = $"Wind Degree: {weather.current.wind_deg}° / {wind_deg_string}";
@@ -177,6 +176,12 @@ namespace dgw {
                             break;
                         }
                     }
+
+                    DateTime creation_time = DateTime.Now;
+                    string jsonFilePath = $"./metadata.json";
+
+                    await weatherClient.save_weather_to_json(weather, city, jsonFilePath, creation_time);
+                    Debug.WriteLine("Metadata saved to JSON.");
 
                     progressBar2.Value = 100;
                 }
@@ -237,22 +242,44 @@ namespace dgw {
             return temp_list;
         }
 
-        public void reorder_daylist() {
+        public void reorder_daylist(string startDay) {
+            string[] originalDays = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+            Dictionary<string, int> dayToIndex = new Dictionary<string, int>();
+            for (int i = 0; i < originalDays.Length; i++) {
+                dayToIndex[originalDays[i]] = i;
+            }
 
-            int today_index = (int)DateTime.Now.DayOfWeek;
-            today_index = (today_index == 0) ? 6 : today_index - 1;
+            if (!dayToIndex.ContainsKey(startDay)) {
+                throw new ArgumentException("Invalid day string.");
+            }
 
+            int startDayIndex = dayToIndex[startDay];
             List<Label> labels = this.get_daylist();
 
-            List<string> reorderedTexts = new List<string>();
-
-            for (int i = 0; i < labels.Count; i++) {
-                int index = (today_index + i) % labels.Count;
-                reorderedTexts.Add(labels[index].Text);
+            if (labels.Count != originalDays.Length) {
+                throw new InvalidOperationException("Day list size mismatch.");
             }
 
             for (int i = 0; i < labels.Count; i++) {
-                labels[i].Text = reorderedTexts[i];
+                int reorderedIndex = (startDayIndex + i) % originalDays.Length;
+                labels[i].Text = originalDays[reorderedIndex];
+            }
+        }
+
+        public void reorder_daylist() {
+            string[] originalDays = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+            int todayIndex = (int)DateTime.Now.DayOfWeek;
+            todayIndex = (todayIndex == 0) ? 6 : todayIndex - 1;
+
+            List<Label> labels = this.get_daylist();
+
+            if (labels.Count != originalDays.Length) {
+                throw new InvalidOperationException("Day list size mismatch.");
+            }
+
+            for (int i = 0; i < labels.Count; i++) {
+                int reorderedIndex = (todayIndex + i) % originalDays.Length;
+                labels[i].Text = originalDays[reorderedIndex];
             }
         }
 
@@ -313,7 +340,7 @@ namespace dgw {
                     Values = this.first_hourly_wind_degs,
                     YToolTipLabelFormatter = point => {
                         return $"{point.Coordinate.PrimaryValue}° / {degrees_to_direction(point.Coordinate.PrimaryValue)}";
-                    }   
+                    }
                 },
             };
 
@@ -358,12 +385,34 @@ namespace dgw {
                     Values = wind_degrees,
                     YToolTipLabelFormatter = point => {
                         return $"{point.Coordinate.PrimaryValue}° / {degrees_to_direction(point.Coordinate.PrimaryValue)}";
-                    }   
+                    }
                 }
             };
         }
-        
 
+
+        private void comboBox1_Click(object sender, EventArgs e) {
+
+            if (city_flag) {
+                comboBox1.ForeColor = Color.Black;
+                comboBox1.Text = string.Empty;
+                city_flag = false;
+            }
+
+        }
+
+
+        private async void debug_button_Click(object sender, EventArgs e) {
+
+            WeatherClient weather_client = new WeatherClient();
+            var filenames = MetaData.get_file_city_names();
+            Debug.WriteLine($"Filenames count: {filenames?.Count ?? 0}");
+
+            foreach (var filename in filenames)
+            {
+                richTextBox3.AppendText(filename.FullName);
+            }
+        }
     }
 }
 

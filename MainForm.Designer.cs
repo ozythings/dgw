@@ -30,6 +30,7 @@ namespace dgw
         ///  the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
+            components = new System.ComponentModel.Container();
             panel1 = new Panel();
             tableLayoutPanel3 = new TableLayoutPanel();
             label18 = new Label();
@@ -45,7 +46,6 @@ namespace dgw
             cartesianChart2 = new LiveChartsCore.SkiaSharpView.WinForms.CartesianChart();
             tabPage3 = new TabPage();
             cartesianChart3 = new LiveChartsCore.SkiaSharpView.WinForms.CartesianChart();
-            debug_button = new Button();
             tableLayoutPanel2 = new TableLayoutPanel();
             pictureBox1 = new PictureBox();
             pictureBox2 = new PictureBox();
@@ -68,20 +68,23 @@ namespace dgw
             label9 = new Label();
             label_day6 = new Label();
             label_day5 = new Label();
+            label8 = new Label();
             tableLayoutPanel1 = new TableLayoutPanel();
             label17 = new Label();
             label16 = new Label();
             pictureBox8 = new PictureBox();
-            comboBox4 = new ComboBox();
-            comboBox3 = new ComboBox();
-            label8 = new Label();
             richTextBox2 = new RichTextBox();
             richTextBox1 = new RichTextBox();
+            debug_button = new Button();
+            comboBoxOTime = new ComboBox();
+            comboBoxOCity = new ComboBox();
+            comboBoxODate = new ComboBox();
             flowLayoutPanel1 = new FlowLayoutPanel();
             comboBox1 = new ComboBox();
             refresh_button = new Button();
-            comboBox2 = new ComboBox();
             progressBar2 = new ProgressBar();
+            errorProvider1 = new ErrorProvider(components);
+            richTextBox3 = new RichTextBox();
             panel1.SuspendLayout();
             tableLayoutPanel3.SuspendLayout();
             tabControl1.SuspendLayout();
@@ -99,6 +102,7 @@ namespace dgw
             tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox8).BeginInit();
             flowLayoutPanel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)errorProvider1).BeginInit();
             SuspendLayout();
             // 
             // panel1
@@ -107,11 +111,9 @@ namespace dgw
             panel1.Controls.Add(tableLayoutPanel3);
             panel1.Controls.Add(tabControl1);
             panel1.Controls.Add(tableLayoutPanel2);
+            panel1.Controls.Add(label8);
             panel1.Controls.Add(tableLayoutPanel1);
             panel1.Controls.Add(pictureBox8);
-            panel1.Controls.Add(comboBox4);
-            panel1.Controls.Add(comboBox3);
-            panel1.Controls.Add(label8);
             panel1.Controls.Add(richTextBox2);
             panel1.Controls.Add(richTextBox1);
             panel1.Font = new Font("Arial", 12F);
@@ -289,15 +291,6 @@ namespace dgw
             cartesianChart3.Name = "cartesianChart3";
             cartesianChart3.Size = new Size(744, 199);
             cartesianChart3.TabIndex = 0;
-            // 
-            // debug_button
-            // 
-            debug_button.Location = new Point(3, 3);
-            debug_button.Name = "debug_button";
-            debug_button.Size = new Size(75, 23);
-            debug_button.TabIndex = 42;
-            debug_button.Text = "debug";
-            debug_button.UseVisualStyleBackColor = true;
             // 
             // tableLayoutPanel2
             // 
@@ -601,6 +594,18 @@ namespace dgw
             label_day5.Text = "Friday";
             label_day5.TextAlign = ContentAlignment.MiddleCenter;
             // 
+            // label8
+            // 
+            label8.Anchor = AnchorStyles.Top;
+            label8.AutoSize = true;
+            label8.Location = new Point(793, 8);
+            label8.Margin = new Padding(3, 3, 3, 0);
+            label8.Name = "label8";
+            label8.Size = new Size(147, 18);
+            label8.TabIndex = 15;
+            label8.Text = "Detailed Information";
+            label8.TextAlign = ContentAlignment.MiddleCenter;
+            // 
             // tableLayoutPanel1
             // 
             tableLayoutPanel1.ColumnCount = 2;
@@ -651,34 +656,6 @@ namespace dgw
             pictureBox8.TabIndex = 30;
             pictureBox8.TabStop = false;
             // 
-            // comboBox4
-            // 
-            comboBox4.FormattingEnabled = true;
-            comboBox4.Location = new Point(789, 47);
-            comboBox4.Name = "comboBox4";
-            comboBox4.Size = new Size(151, 26);
-            comboBox4.TabIndex = 22;
-            // 
-            // comboBox3
-            // 
-            comboBox3.FormattingEnabled = true;
-            comboBox3.Location = new Point(789, 77);
-            comboBox3.Name = "comboBox3";
-            comboBox3.Size = new Size(151, 26);
-            comboBox3.TabIndex = 5;
-            // 
-            // label8
-            // 
-            label8.Anchor = AnchorStyles.Top;
-            label8.AutoSize = true;
-            label8.Location = new Point(791, 26);
-            label8.Margin = new Padding(3, 3, 3, 0);
-            label8.Name = "label8";
-            label8.Size = new Size(147, 18);
-            label8.TabIndex = 15;
-            label8.Text = "Detailed Information";
-            label8.TextAlign = ContentAlignment.MiddleCenter;
-            // 
             // richTextBox2
             // 
             richTextBox2.Location = new Point(789, 456);
@@ -689,19 +666,53 @@ namespace dgw
             // 
             // richTextBox1
             // 
-            richTextBox1.Location = new Point(789, 109);
+            richTextBox1.Location = new Point(789, 32);
             richTextBox1.Name = "richTextBox1";
-            richTextBox1.Size = new Size(151, 341);
+            richTextBox1.Size = new Size(151, 418);
             richTextBox1.TabIndex = 12;
             richTextBox1.Text = "";
+            // 
+            // debug_button
+            // 
+            debug_button.Location = new Point(963, 101);
+            debug_button.Name = "debug_button";
+            debug_button.Size = new Size(121, 27);
+            debug_button.TabIndex = 42;
+            debug_button.Text = "Get Old Data";
+            debug_button.UseVisualStyleBackColor = true;
+            debug_button.Click += debug_button_Click;
+            // 
+            // comboBoxOTime
+            // 
+            comboBoxOTime.FormattingEnabled = true;
+            comboBoxOTime.Location = new Point(963, 72);
+            comboBoxOTime.Name = "comboBoxOTime";
+            comboBoxOTime.Size = new Size(121, 23);
+            comboBoxOTime.TabIndex = 4;
+            // 
+            // comboBoxOCity
+            // 
+            comboBoxOCity.FormattingEnabled = true;
+            comboBoxOCity.Location = new Point(963, 15);
+            comboBoxOCity.Name = "comboBoxOCity";
+            comboBoxOCity.Size = new Size(119, 23);
+            comboBoxOCity.TabIndex = 22;
+            // 
+            // comboBoxODate
+            // 
+            comboBoxODate.FormattingEnabled = true;
+            comboBoxODate.Location = new Point(963, 44);
+            comboBoxODate.Name = "comboBoxODate";
+            comboBoxODate.Size = new Size(119, 23);
+            comboBoxODate.TabIndex = 5;
             // 
             // flowLayoutPanel1
             // 
             flowLayoutPanel1.BackColor = Color.White;
-            flowLayoutPanel1.Controls.Add(debug_button);
-            flowLayoutPanel1.Location = new Point(963, 41);
+            flowLayoutPanel1.Controls.Add(richTextBox3);
+            flowLayoutPanel1.Location = new Point(963, 140);
             flowLayoutPanel1.Name = "flowLayoutPanel1";
-            flowLayoutPanel1.Size = new Size(121, 405);
+            flowLayoutPanel1.Size = new Size(121, 306);
             flowLayoutPanel1.TabIndex = 3;
             // 
             // comboBox1
@@ -711,6 +722,8 @@ namespace dgw
             comboBox1.Name = "comboBox1";
             comboBox1.Size = new Size(121, 23);
             comboBox1.TabIndex = 2;
+            comboBox1.Text = "City";
+            comboBox1.Click += comboBox1_Click;
             // 
             // refresh_button
             // 
@@ -722,14 +735,6 @@ namespace dgw
             refresh_button.UseVisualStyleBackColor = true;
             refresh_button.Click += refresh_button_Click;
             // 
-            // comboBox2
-            // 
-            comboBox2.FormattingEnabled = true;
-            comboBox2.Location = new Point(963, 12);
-            comboBox2.Name = "comboBox2";
-            comboBox2.Size = new Size(121, 23);
-            comboBox2.TabIndex = 4;
-            // 
             // progressBar2
             // 
             progressBar2.Location = new Point(961, 452);
@@ -737,18 +742,33 @@ namespace dgw
             progressBar2.Size = new Size(121, 23);
             progressBar2.TabIndex = 5;
             // 
+            // errorProvider1
+            // 
+            errorProvider1.ContainerControl = this;
+            // 
+            // richTextBox3
+            // 
+            richTextBox3.Location = new Point(3, 3);
+            richTextBox3.Name = "richTextBox3";
+            richTextBox3.Size = new Size(116, 215);
+            richTextBox3.TabIndex = 0;
+            richTextBox3.Text = "";
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
             ClientSize = new Size(1094, 545);
+            Controls.Add(debug_button);
             Controls.Add(progressBar2);
-            Controls.Add(comboBox2);
+            Controls.Add(comboBoxOTime);
             Controls.Add(panel1);
             Controls.Add(comboBox1);
             Controls.Add(flowLayoutPanel1);
             Controls.Add(refresh_button);
+            Controls.Add(comboBoxOCity);
+            Controls.Add(comboBoxODate);
             Name = "MainForm";
             Text = "dgw";
             Load += MainForm_Load;
@@ -773,6 +793,7 @@ namespace dgw
             tableLayoutPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox8).EndInit();
             flowLayoutPanel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)errorProvider1).EndInit();
             ResumeLayout(false);
         }
 
@@ -781,7 +802,7 @@ namespace dgw
         private Button refresh_button;
         private ComboBox comboBox1;
         private FlowLayoutPanel flowLayoutPanel1;
-        private ComboBox comboBox2;
+        private ComboBox comboBoxOTime;
         private RichTextBox richTextBox1;
         private RichTextBox richTextBox2;
         private Label label_day3;
@@ -799,8 +820,8 @@ namespace dgw
         private PictureBox pictureBox4;
         private PictureBox pictureBox3;
         private PictureBox pictureBox2;
-        private ComboBox comboBox4;
-        private ComboBox comboBox3;
+        private ComboBox comboBoxOCity;
+        private ComboBox comboBoxODate;
         private Label label9;
         private Label label15;
         private Label label14;
@@ -829,5 +850,7 @@ namespace dgw
         private LiveChartsCore.SkiaSharpView.WinForms.CartesianChart cartesianChart2;
         private LiveChartsCore.SkiaSharpView.WinForms.CartesianChart cartesianChart3;
         private TableLayoutPanel tableLayoutPanel3;
+        private ErrorProvider errorProvider1;
+        private RichTextBox richTextBox3;
     }
 }

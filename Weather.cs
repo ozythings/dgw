@@ -1,5 +1,8 @@
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Text.Json;
 using dgw.Weather;
+using dgw.Metadata;
 
 namespace dgw.Weather {
 
@@ -131,7 +134,7 @@ public class GeoLocation
 
 public class WeatherClient
 {
-    public async Task<WeatherResponse> GetWeatherAsync(string url)
+    public async Task<WeatherResponse> get_weather_async(string url)
     {
         using HttpClient client = new HttpClient();
         try
@@ -154,6 +157,15 @@ public class WeatherClient
             Console.WriteLine($"JSON parsing error: {e.Message}");
             return null;
         }
+    }
+
+    public async Task<WeatherResponse> get_old_weather(FileInfo filename)
+    {
+        string file_content = await File.ReadAllTextAsync($"{filename.ToString()}");
+        Debug.WriteLine($"hey 1 {file_content}");
+        WeatherResponse weather = JsonSerializer.Deserialize<WeatherResponse>(file_content);
+        Debug.WriteLine($"hey {file_content}");
+        return weather;
     }
 
     public async Task<List<(decimal min, decimal max)>> get_temps(WeatherResponse weather_response) {
@@ -241,6 +253,42 @@ public class WeatherClient
         return (first24, second24);
     }
 
+    public async Task<MetaData> save_weather_to_json(
+        WeatherResponse weather_response,
+        string city_name,
+        string metadata_path,
+        DateTime creation_time
+        ) {
+        if (weather_response != null && weather_response.hourly != null) {
+
+            string current_date = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+            // Example: "london_2024-12-11_14-30-45.json"
+            string file_path = $"./old/{city_name.ToLower()}_{current_date}.json";
+
+            var options = new JsonSerializerOptions {
+                WriteIndented = true
+            };
+
+            string json_content = JsonSerializer.Serialize(weather_response, options);
+
+            await File.WriteAllTextAsync(file_path, json_content);
+
+            Debug.WriteLine($"Weather data for {city_name} successfully saved to {file_path}");
+
+            MetaData.save_metadata_to_json(file_path, creation_time, city_name, metadata_path);
+
+            MetaData metadata = new MetaData {
+                city = city_name,
+                file_path = file_path,
+                metadata_path = metadata_path,
+                creation_time = creation_time
+
+            };
+            return metadata;
+
+        }
+        return null;
+    }
 }
 
 public class GeoLocationClient
