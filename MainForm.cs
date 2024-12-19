@@ -6,6 +6,7 @@ using System.Diagnostics;
 using Tomlyn;
 using Tomlyn.Model;
 using System.Reflection;
+using System.Text.Json;
 
 namespace dgw {
 
@@ -25,9 +26,12 @@ namespace dgw {
         private List<int> first_hourly_wind_degs, second_hourly_wind_degs;
         private List<decimal> first_hourly_wind_speeds, second_hourly_wind_speeds;
 
+        private List<DateTime> validDates = new List<DateTime>();
 
         private bool is_column_series = false;
         private int wind_deg;
+
+        private string old_file_filepath;
 
 
         public MainForm() {
@@ -41,7 +45,6 @@ namespace dgw {
             cartesianChart1.ZoomMode = LiveChartsCore.Measure.ZoomAndPanMode.X;
 
             get_api_key();
-            this.reorder_daylist("Wednesday");
 
             string[] cities = { "Amasya", "Ankara", "Istanbul" };
 
@@ -107,16 +110,16 @@ namespace dgw {
 
                 // this gets weather data using lat and lon
                 string weatherUrl = $"https://api.openweathermap.org/data/3.0/onecall?lat={location.lat}&lon={location.lon}&appid={api_key}&units=metric";
-                WeatherClient weatherClient = new WeatherClient();
-                WeatherResponse weather = await weatherClient.get_weather_async(weatherUrl);
+                WeatherClient weather_client = new WeatherClient();
+                WeatherResponse weather = await weather_client.get_weather_async(weatherUrl);
 
                 if (weather != null) {
 
-                    var minmax_temps = await weatherClient.get_temps(weather);
-                    var icons = await weatherClient.get_icons(weather);
-                    var (first_hourly_temps, second_hourly_temps) = await weatherClient.get_hourly_temps(weather);
-                    var (first_hourly_wind_degs, second_hourly_wind_degs) = await weatherClient.get_hourly_wind_degrees(weather);
-                    var (first_hourly_wind_speeds, second_hourly_wind_speeds) = await weatherClient.get_hourly_wind_speeds(weather);
+                    var minmax_temps = await weather_client.get_temps(weather);
+                    var icons = await weather_client.get_icons(weather);
+                    var (first_hourly_temps, second_hourly_temps) = await weather_client.get_hourly_temps(weather);
+                    var (first_hourly_wind_degs, second_hourly_wind_degs) = await weather_client.get_hourly_wind_degrees(weather);
+                    var (first_hourly_wind_speeds, second_hourly_wind_speeds) = await weather_client.get_hourly_wind_speeds(weather);
 
                     pictureBox1.BackColor = Color.Turquoise;
                     pictureBox2.BackColor = Color.SkyBlue;
@@ -180,7 +183,7 @@ namespace dgw {
                     DateTime creation_time = DateTime.Now;
                     string jsonFilePath = $"./metadata.json";
 
-                    await weatherClient.save_weather_to_json(weather, city, jsonFilePath, creation_time);
+                    await weather_client.save_weather_to_json(weather, city, jsonFilePath, creation_time);
                     Debug.WriteLine("Metadata saved to JSON.");
 
                     progressBar2.Value = 100;
@@ -401,17 +404,272 @@ namespace dgw {
 
         }
 
-
-        private async void debug_button_Click(object sender, EventArgs e) {
-
+        private void init_old_data() {
             WeatherClient weather_client = new WeatherClient();
-            var filenames = MetaData.get_file_city_names();
+            var filenames = MetaData.get_old_files();
             Debug.WriteLine($"Filenames count: {filenames?.Count ?? 0}");
 
-            foreach (var filename in filenames)
-            {
-                richTextBox3.AppendText(filename.FullName);
+            List<string> city_names = MetaData.get_old_file_parts(0);
+            var dates = MetaData.get_old_file_parts(1);
+            var times = MetaData.get_old_file_parts(2);
+
+            List<DateTime> dates_as_datetime = new List<DateTime>();
+            List<DateTime> times_as_datetime = new List<DateTime>();
+
+            // creating dictionaries to store city-specific dates and times
+            Dictionary<string, List<DateTime>> city_dates = new Dictionary<string, List<DateTime>>();
+            Dictionary<string, List<DateTime>> city_times = new Dictionary<string, List<DateTime>>();
+
+            for (int i = 0; i < city_names.Count; i++) {
+                if (DateTime.TryParseExact(dates[i], "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out DateTime parsed_date)) {
+                    dates_as_datetime.Add(parsed_date);
+                } else {
+                    Debug.WriteLine($"Invalid date format: {dates[i]}");
+                }
+
+                string timeString = times[i].Replace('-', ':');
+                if (DateTime.TryParseExact(timeString, "HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out DateTime parsed_time)) {
+                    times_as_datetime.Add(parsed_time);
+                } else {
+                    Debug.WriteLine($"Invalid time format: {times[i]}");
+                }
+
+                // adding city, date, and time to the corresponding dictionaries
+                if (!city_dates.ContainsKey(city_names[i])) {
+                    city_dates[city_names[i]] = new List<DateTime>();
+                    city_times[city_names[i]] = new List<DateTime>();
+                }
+
+                city_dates[city_names[i]].Add(dates_as_datetime[i]);
+                city_times[city_names[i]].Add(times_as_datetime[i]);
+
+                // update ComboBox for cities (avoiding duplicates)
+                string cityName = city_names[i];
+                string formatted_city_name = char.ToUpper(cityName[0]) + cityName.Substring(1);
+
+                if (!comboBoxOCity.Items.Contains(formatted_city_name)) {
+                    comboBoxOCity.Items.Add(formatted_city_name);
+                }
+
+
+
+                richTextBox3.AppendText($"{city_names[i]} / {dates[i]} / {times[i]}\n");
             }
+
+            foreach (var city in city_dates) {
+                Debug.WriteLine($"City: {city.Key}, Dates: {string.Join(", ", city.Value)}");
+            }
+
+            // Set the event handler to update dates and times based on selected city
+            comboBoxOCity.SelectedIndexChanged += (sender, e) => {
+                comboBoxODate.Items.Clear();
+                comboBoxOTime.Items.Clear();
+
+                string selected_city = comboBoxOCity.SelectedItem?.ToString();
+                if (!string.IsNullOrEmpty(selected_city)) {
+                    Debug.WriteLine($"Selected City: {selected_city}");
+
+                    if (city_dates.ContainsKey(selected_city.ToLower())) {
+                        Debug.WriteLine($"Dates: {string.Join(", ", city_dates[selected_city.ToLower()])}");
+                        Debug.WriteLine($"Times: {string.Join(", ", city_times[selected_city.ToLower()])}");
+
+                        // Add the corresponding dates to comboBoxODate
+                        foreach (var date in city_dates[selected_city.ToLower()]) {
+                            string formatted_date = date.ToString("yyyy-MM-dd");
+
+                            // Check if the date is already added to avoid duplicates
+                            if (!comboBoxODate.Items.Contains(formatted_date)) {
+                                comboBoxODate.Items.Add(formatted_date);
+                                Debug.WriteLine($"Adding Date: {formatted_date}");
+                            }
+                        }
+
+                        // Add the corresponding times to comboBoxOTime
+                        foreach (var time in city_times[selected_city.ToLower()]) {
+                            string formattedTime = time.ToString("HH:mm:ss");
+
+                            // Check if the time is already added to avoid duplicates
+                            if (!comboBoxOTime.Items.Contains(formattedTime)) {
+                                comboBoxOTime.Items.Add(formattedTime);
+                                Debug.WriteLine($"Adding Time: {formattedTime}");
+                            }
+                        }
+                    } else {
+                        Debug.WriteLine($"City {selected_city} not found in city_dates.");
+                    }
+                } else {
+                    Debug.WriteLine("No city selected.");
+                }
+            };
+
+            Debug.WriteLine($"Parsed Dates: {string.Join(", ", dates_as_datetime)}");
+            Debug.WriteLine($"Parsed Times: {string.Join(", ", times_as_datetime)}");
+        }
+
+        // is this the best way to do it? hell no.
+        // was i supposed to use metadata.json for this? yes.
+        // why didn't i do it? i was sleepy so i might implement that later.
+        // this function became a shit code.
+        void get_old_data() {
+            string selected_city = comboBoxOCity.SelectedItem?.ToString();
+
+            DateTime? selected_date = null;
+
+            if (comboBoxODate.SelectedItem != null) {
+                string selected_dateString = comboBoxODate.SelectedItem.ToString();
+                if (DateTime.TryParse(selected_dateString, out DateTime parsed_date)) {
+                    selected_date = parsed_date;
+                } else {
+                    Debug.WriteLine($"Invalid date format: {selected_dateString}");
+                }
+            } else {
+                Debug.WriteLine("No date selected.");
+            }
+
+            string selected_timeString = comboBoxOTime.SelectedItem?.ToString();
+            DateTime? selected_time = null;
+
+            if (!string.IsNullOrEmpty(selected_timeString)) {
+                if (DateTime.TryParseExact(selected_timeString, "HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out DateTime parsed_time)) {
+                    selected_time = parsed_time;
+                } else {
+                    Debug.WriteLine($"Invalid time format: {selected_timeString}");
+                }
+            }
+
+            Debug.WriteLine($"Selected Time: {selected_time}");
+
+            Debug.WriteLine($"Selected City: {selected_city} -- Selected Date: {selected_date} -- Selected Time: {selected_time}");
+
+            if (selected_city == null || selected_date == null || selected_time == null) {
+                MessageBox.Show("Please select a city, date, and time.");
+                return;
+            }
+
+            string date = selected_date?.ToString("yyyy-MM-dd");
+            string formattedTime = selected_time?.ToString("HH:mm:ss").Replace(":", "-");
+
+            Debug.WriteLine($"Formatted Date: {date} -- Formatted Time: {formattedTime}");
+
+            string day_name = selected_date?.ToString("dddd");
+
+            Debug.WriteLine($"Day Name: {day_name}");
+
+            this.reorder_daylist(day_name);
+
+            var files = MetaData.get_old_files();
+
+            var matching_files = files.Where(file =>
+            {
+                string filename_without_extension = Path.GetFileNameWithoutExtension(file.Name);
+                string[] parts = filename_without_extension.Split('_');
+
+                return parts.Length >= 3 &&
+                       parts[0].Equals(selected_city, StringComparison.OrdinalIgnoreCase) &&
+                       parts[1].Equals(date) &&
+                       parts[2].Equals(formattedTime);
+            }).ToList();
+
+            if (matching_files.Count == 0) {
+                MessageBox.Show("No matching data found.");
+                return;
+            }
+
+            foreach (var file in matching_files) {
+                string filepath = file.FullName;
+                Debug.WriteLine($"Found matching file: {filepath}");
+                old_file_filepath = filepath;
+
+                richTextBox3.AppendText($"File found: {file.Name}\n");
+                string file_contents = File.ReadAllText(filepath);
+                richTextBox3.AppendText($"Contents:\n{file_contents}\n");
+            }
+        }
+
+        // this loads weather data from a JSON file
+        private async Task load_weather_from_json(string jsonFilePath) {
+            if (File.Exists(jsonFilePath)) {
+                string file_contents = File.ReadAllText(jsonFilePath);
+
+                WeatherClient weather_client = new WeatherClient();
+                WeatherResponse weather = JsonSerializer.Deserialize<WeatherResponse>(file_contents);
+                List<Label> temp_labels = this.get_temp_list();
+                List<PictureBox> picture_boxes = this.get_picturebox_list();
+
+                if (weather != null) {
+                    string old_city_name = comboBoxOCity.Text;
+                    richTextBox1.Text = $"Name: {old_city_name} \nLatitude: {weather.lat}\nLongitude: {weather.lon}";
+
+                    var minmax_temps = await weather_client.get_temps(weather);
+                    var icons = await weather_client.get_icons(weather);
+                    var (first_hourly_temps, second_hourly_temps) = await weather_client.get_hourly_temps(weather);
+                    var (first_hourly_wind_degs, second_hourly_wind_degs) = await weather_client.get_hourly_wind_degrees(weather);
+                    var (first_hourly_wind_speeds, second_hourly_wind_speeds) = await weather_client.get_hourly_wind_speeds(weather);
+
+                    pictureBox1.BackColor = Color.Turquoise;
+                    pictureBox2.BackColor = Color.SkyBlue;
+
+                    (this.first_hourly_temps, this.second_hourly_temps) = (first_hourly_temps, second_hourly_temps);
+                    (this.first_hourly_wind_degs, this.second_hourly_wind_degs) = (first_hourly_wind_degs, second_hourly_wind_degs);
+                    (this.first_hourly_wind_speeds, this.second_hourly_wind_speeds) = (first_hourly_wind_speeds, second_hourly_wind_speeds);
+
+                    await this.draw_graphs();
+
+                    richTextBox1.AppendText($"\n\nWeather Information:\n");
+                    richTextBox1.AppendText($"Temperature: {weather.current.temp}°C\n");
+                    richTextBox1.AppendText($"Feels Like: {weather.current.feelsLike}°C\n");
+                    richTextBox1.AppendText($"Humidity: {weather.current.humidity}%\n");
+                    richTextBox1.AppendText($"Weather: {weather.current.weather[0].description}");
+
+                    this.wind_deg = weather.current.wind_deg;
+                    string wind_deg_string = this.degrees_to_direction(wind_deg);
+
+                    label19.Text = $"Humidity: {weather.current.humidity}";
+                    label21.Text = $"Wind: {weather.current.wind_speed} m/s";
+                    label22.Text = $"Wind Degree: {weather.current.wind_deg}° / {wind_deg_string}";
+
+                    int index = 0;
+                    foreach (var (min, max) in minmax_temps) {
+                        temp_labels[index].Text = $"{((int)min)} °C / {((int)max)}°C";
+                        index++;
+
+                        if (temp_labels.Count == index) {
+                            break;
+                        }
+                    }
+                    index = 0;
+
+                    var primary_icon = weather.current.weather[0].icon;
+                    var primary_temp = weather.current.temp;
+                    pictureBox8.Image = Image.FromFile($"./icons/{primary_icon}.png");
+                    label16.Text = ((int)primary_temp).ToString();
+
+                    foreach (var icon in icons) {
+                        richTextBox2.AppendText($"{icon}\n");
+                        picture_boxes[index].Image = Image.FromFile($"./icons/{icon}.png");
+
+                        index++;
+
+                        if (picture_boxes.Count == index) {
+                            break;
+                        }
+                    }
+
+                    progressBar2.Value = 100;
+                }
+            } else {
+                richTextBox1.Text = "No saved weather data found in the specified file.";
+            }
+
+        }
+
+        private void old_refresh_button_Click(object sender, EventArgs e) {
+            init_old_data();
+        }
+
+        private async void get_data_button_Click(object sender, EventArgs e) {
+            get_old_data();
+            await load_weather_from_json(old_file_filepath);
         }
     }
 }

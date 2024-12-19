@@ -165,6 +165,8 @@ public class WeatherClient
         Debug.WriteLine($"hey 1 {file_content}");
         WeatherResponse weather = JsonSerializer.Deserialize<WeatherResponse>(file_content);
         Debug.WriteLine($"hey {file_content}");
+
+
         return weather;
     }
 

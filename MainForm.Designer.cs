@@ -75,16 +75,17 @@ namespace dgw
             pictureBox8 = new PictureBox();
             richTextBox2 = new RichTextBox();
             richTextBox1 = new RichTextBox();
-            debug_button = new Button();
+            get_data_button = new Button();
             comboBoxOTime = new ComboBox();
             comboBoxOCity = new ComboBox();
             comboBoxODate = new ComboBox();
             flowLayoutPanel1 = new FlowLayoutPanel();
+            richTextBox3 = new RichTextBox();
             comboBox1 = new ComboBox();
             refresh_button = new Button();
             progressBar2 = new ProgressBar();
             errorProvider1 = new ErrorProvider(components);
-            richTextBox3 = new RichTextBox();
+            old_refresh_button = new Button();
             panel1.SuspendLayout();
             tableLayoutPanel3.SuspendLayout();
             tabControl1.SuspendLayout();
@@ -672,22 +673,22 @@ namespace dgw
             richTextBox1.TabIndex = 12;
             richTextBox1.Text = "";
             // 
-            // debug_button
+            // get_data_button
             // 
-            debug_button.Location = new Point(963, 101);
-            debug_button.Name = "debug_button";
-            debug_button.Size = new Size(121, 27);
-            debug_button.TabIndex = 42;
-            debug_button.Text = "Get Old Data";
-            debug_button.UseVisualStyleBackColor = true;
-            debug_button.Click += debug_button_Click;
+            get_data_button.Location = new Point(963, 101);
+            get_data_button.Name = "get_data_button";
+            get_data_button.Size = new Size(119, 23);
+            get_data_button.TabIndex = 42;
+            get_data_button.Text = "Get Old Data";
+            get_data_button.UseVisualStyleBackColor = true;
+            get_data_button.Click += get_data_button_Click;
             // 
             // comboBoxOTime
             // 
             comboBoxOTime.FormattingEnabled = true;
             comboBoxOTime.Location = new Point(963, 72);
             comboBoxOTime.Name = "comboBoxOTime";
-            comboBoxOTime.Size = new Size(121, 23);
+            comboBoxOTime.Size = new Size(119, 23);
             comboBoxOTime.TabIndex = 4;
             // 
             // comboBoxOCity
@@ -710,10 +711,18 @@ namespace dgw
             // 
             flowLayoutPanel1.BackColor = Color.White;
             flowLayoutPanel1.Controls.Add(richTextBox3);
-            flowLayoutPanel1.Location = new Point(963, 140);
+            flowLayoutPanel1.Location = new Point(963, 200);
             flowLayoutPanel1.Name = "flowLayoutPanel1";
-            flowLayoutPanel1.Size = new Size(121, 306);
+            flowLayoutPanel1.Size = new Size(121, 246);
             flowLayoutPanel1.TabIndex = 3;
+            // 
+            // richTextBox3
+            // 
+            richTextBox3.Location = new Point(3, 3);
+            richTextBox3.Name = "richTextBox3";
+            richTextBox3.Size = new Size(116, 193);
+            richTextBox3.TabIndex = 0;
+            richTextBox3.Text = "";
             // 
             // comboBox1
             // 
@@ -746,21 +755,24 @@ namespace dgw
             // 
             errorProvider1.ContainerControl = this;
             // 
-            // richTextBox3
+            // old_refresh_button
             // 
-            richTextBox3.Location = new Point(3, 3);
-            richTextBox3.Name = "richTextBox3";
-            richTextBox3.Size = new Size(116, 215);
-            richTextBox3.TabIndex = 0;
-            richTextBox3.Text = "";
+            old_refresh_button.Location = new Point(963, 130);
+            old_refresh_button.Name = "old_refresh_button";
+            old_refresh_button.Size = new Size(119, 23);
+            old_refresh_button.TabIndex = 43;
+            old_refresh_button.Text = "Load Old Data";
+            old_refresh_button.UseVisualStyleBackColor = true;
+            old_refresh_button.Click += old_refresh_button_Click;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
-            ClientSize = new Size(1094, 545);
-            Controls.Add(debug_button);
+            ClientSize = new Size(1094, 544);
+            Controls.Add(old_refresh_button);
+            Controls.Add(get_data_button);
             Controls.Add(progressBar2);
             Controls.Add(comboBoxOTime);
             Controls.Add(panel1);
@@ -841,7 +853,7 @@ namespace dgw
         private TableLayoutPanel tableLayoutPanel1;
         private Label label17;
         private TableLayoutPanel tableLayoutPanel2;
-        private Button debug_button;
+        private Button get_data_button;
         private TabControl tabControl1;
         private TabPage tabPage1;
         private LiveChartsCore.SkiaSharpView.WinForms.CartesianChart cartesianChart1;
@@ -852,5 +864,6 @@ namespace dgw
         private TableLayoutPanel tableLayoutPanel3;
         private ErrorProvider errorProvider1;
         private RichTextBox richTextBox3;
+        private Button old_refresh_button;
     }
 }

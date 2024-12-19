@@ -61,24 +61,58 @@ namespace dgw.Metadata {
             return weather_list;
 
         }
+        // i might deprecate this
+        public static List<FileInfo> get_old_files() {
+            string folderPath = "./old";
 
-        public static List<FileInfo> get_file_city_names() {
+            if (!Directory.Exists(folderPath)) {
+                Directory.CreateDirectory(folderPath);
+                Debug.WriteLine("Created 'old' folder.");
+            }
 
-            DirectoryInfo directory = new DirectoryInfo($"./");
-            FileInfo[] files = directory.GetFiles("./old/*.json");
+            DirectoryInfo directory = new DirectoryInfo(folderPath);
+            FileInfo[] files = directory.GetFiles("*.json");
             List<FileInfo> filename_list = new List<FileInfo>();
 
             foreach (var filename in files) {
                 filename_list.Add(filename);
             }
 
-            foreach(var filename in filename_list) {
+            foreach (var filename in filename_list) {
                 Debug.WriteLine($"{filename}");
             }
 
             return filename_list;
         }
+        // part indicates which part you want of the file name
+        // 0 -> city name
+        // 1 -> date
+        // 2 -> time
+        public static List<string> get_old_file_parts(int part) {
 
+            DirectoryInfo directory = new DirectoryInfo($"./");
+            FileInfo[] files = directory.GetFiles("./old/*.json");
+            List<string> part_list = new List<string>();
+
+            foreach (var file in files)
+            {
+                string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.Name);
+
+                string[] parts = fileNameWithoutExtension.Split('_');
+                if (parts.Length > 0)
+                {
+                    part_list.Add(parts[part]);
+                }
+            }
+
+            // Debug output
+            foreach (var p in part_list)
+            {
+                Debug.WriteLine($"{p}");
+            }
+
+            return part_list;
+        }
 
     }
 }
