@@ -1,13 +1,10 @@
 
-using System;
 using System.Diagnostics;
-using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Windows.Forms.Design;
-using dgw.Weather;
+using Weather;
 
-namespace dgw.Metadata {
+namespace Metadata {
 
     public class MetaData {
         public string file_path { get; set; }
