@@ -32,6 +32,8 @@ namespace dgw
         private void InitializeComponent() {
             components = new System.ComponentModel.Container();
             panel1 = new Panel();
+            button2 = new Button();
+            button1 = new Button();
             label1 = new Label();
             tableLayoutPanel3 = new TableLayoutPanel();
             label20 = new Label();
@@ -90,6 +92,8 @@ namespace dgw
             progressBar2 = new ProgressBar();
             errorProvider1 = new ErrorProvider(components);
             old_refresh_button = new Button();
+            buttonPlay = new Button();
+            panelPlay = new Panel();
             panel1.SuspendLayout();
             tableLayoutPanel3.SuspendLayout();
             tabControl1.SuspendLayout();
@@ -117,6 +121,8 @@ namespace dgw
             // panel1
             // 
             panel1.BackColor = Color.White;
+            panel1.Controls.Add(button2);
+            panel1.Controls.Add(button1);
             panel1.Controls.Add(label1);
             panel1.Controls.Add(tableLayoutPanel3);
             panel1.Controls.Add(tabControl1);
@@ -128,6 +134,28 @@ namespace dgw
             panel1.Name = "panel1";
             panel1.Size = new Size(802, 532);
             panel1.TabIndex = 1;
+            // 
+            // button2
+            // 
+            button2.Font = new Font("Arial", 9F);
+            button2.Location = new Point(241, 91);
+            button2.Name = "button2";
+            button2.Size = new Size(20, 20);
+            button2.TabIndex = 49;
+            button2.Text = "S";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
+            // 
+            // button1
+            // 
+            button1.Font = new Font("Arial", 9F);
+            button1.Location = new Point(219, 91);
+            button1.Name = "button1";
+            button1.Size = new Size(20, 20);
+            button1.TabIndex = 48;
+            button1.Text = "R";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
             // 
             // label1
             // 
@@ -229,7 +257,7 @@ namespace dgw
             tabControl1.Controls.Add(tabPageWindS);
             tabControl1.Controls.Add(tabPageWindD);
             tabControl1.ItemSize = new Size(412, 24);
-            tabControl1.Location = new Point(22, 118);
+            tabControl1.Location = new Point(22, 120);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
             tabControl1.Size = new Size(777, 258);
@@ -260,7 +288,7 @@ namespace dgw
             tabPagePrec.Controls.Add(tabControl2);
             tabPagePrec.Location = new Point(4, 28);
             tabPagePrec.Name = "tabPagePrec";
-            tabPagePrec.Size = new Size(755, 226);
+            tabPagePrec.Size = new Size(769, 226);
             tabPagePrec.TabIndex = 4;
             tabPagePrec.Text = "Precipitation";
             tabPagePrec.UseVisualStyleBackColor = true;
@@ -275,7 +303,7 @@ namespace dgw
             tabControl2.Multiline = true;
             tabControl2.Name = "tabControl2";
             tabControl2.SelectedIndex = 0;
-            tabControl2.Size = new Size(755, 226);
+            tabControl2.Size = new Size(769, 226);
             tabControl2.TabIndex = 0;
             // 
             // tabPageRain
@@ -283,7 +311,7 @@ namespace dgw
             tabPageRain.Controls.Add(cartesianChart4);
             tabPageRain.Location = new Point(4, 25);
             tabPageRain.Name = "tabPageRain";
-            tabPageRain.Size = new Size(747, 197);
+            tabPageRain.Size = new Size(761, 197);
             tabPageRain.TabIndex = 0;
             tabPageRain.Text = "Rain";
             tabPageRain.UseVisualStyleBackColor = true;
@@ -295,7 +323,7 @@ namespace dgw
             cartesianChart4.Location = new Point(0, 0);
             cartesianChart4.Margin = new Padding(8, 7, 8, 7);
             cartesianChart4.Name = "cartesianChart4";
-            cartesianChart4.Size = new Size(747, 197);
+            cartesianChart4.Size = new Size(761, 197);
             cartesianChart4.TabIndex = 39;
             // 
             // tabPageSnow
@@ -323,7 +351,7 @@ namespace dgw
             tabPageWindS.Controls.Add(cartesianChart2);
             tabPageWindS.Location = new Point(4, 28);
             tabPageWindS.Name = "tabPageWindS";
-            tabPageWindS.Size = new Size(755, 226);
+            tabPageWindS.Size = new Size(769, 226);
             tabPageWindS.TabIndex = 2;
             tabPageWindS.Text = "Wind Speed";
             tabPageWindS.UseVisualStyleBackColor = true;
@@ -335,7 +363,7 @@ namespace dgw
             cartesianChart2.Location = new Point(0, 0);
             cartesianChart2.Margin = new Padding(4);
             cartesianChart2.Name = "cartesianChart2";
-            cartesianChart2.Size = new Size(755, 226);
+            cartesianChart2.Size = new Size(769, 226);
             cartesianChart2.TabIndex = 0;
             // 
             // tabPageWindD
@@ -343,7 +371,7 @@ namespace dgw
             tabPageWindD.Controls.Add(cartesianChart3);
             tabPageWindD.Location = new Point(4, 28);
             tabPageWindD.Name = "tabPageWindD";
-            tabPageWindD.Size = new Size(755, 226);
+            tabPageWindD.Size = new Size(769, 226);
             tabPageWindD.TabIndex = 3;
             tabPageWindD.Text = "Wind Degree";
             tabPageWindD.UseVisualStyleBackColor = true;
@@ -355,7 +383,7 @@ namespace dgw
             cartesianChart3.Location = new Point(0, 0);
             cartesianChart3.Margin = new Padding(3, 2, 3, 2);
             cartesianChart3.Name = "cartesianChart3";
-            cartesianChart3.Size = new Size(755, 226);
+            cartesianChart3.Size = new Size(769, 226);
             cartesianChart3.TabIndex = 0;
             // 
             // tableLayoutPanel2
@@ -396,7 +424,7 @@ namespace dgw
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 18.75F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 62.5F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 18.75F));
-            tableLayoutPanel2.Size = new Size(780, 147);
+            tableLayoutPanel2.Size = new Size(777, 147);
             tableLayoutPanel2.TabIndex = 41;
             // 
             // pictureBox1
@@ -404,7 +432,7 @@ namespace dgw
             pictureBox1.Anchor = AnchorStyles.Top;
             pictureBox1.BackColor = Color.SkyBlue;
             pictureBox1.BorderStyle = BorderStyle.FixedSingle;
-            pictureBox1.Location = new Point(16, 31);
+            pictureBox1.Location = new Point(15, 31);
             pictureBox1.Name = "pictureBox1";
             pictureBox1.Size = new Size(80, 78);
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
@@ -417,7 +445,7 @@ namespace dgw
             pictureBox2.Anchor = AnchorStyles.Top;
             pictureBox2.BackColor = Color.SkyBlue;
             pictureBox2.BorderStyle = BorderStyle.FixedSingle;
-            pictureBox2.Location = new Point(127, 31);
+            pictureBox2.Location = new Point(125, 31);
             pictureBox2.Name = "pictureBox2";
             pictureBox2.Size = new Size(80, 78);
             pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
@@ -430,7 +458,7 @@ namespace dgw
             pictureBox3.Anchor = AnchorStyles.Top;
             pictureBox3.BackColor = Color.SkyBlue;
             pictureBox3.BorderStyle = BorderStyle.FixedSingle;
-            pictureBox3.Location = new Point(238, 31);
+            pictureBox3.Location = new Point(235, 31);
             pictureBox3.Name = "pictureBox3";
             pictureBox3.Size = new Size(80, 78);
             pictureBox3.SizeMode = PictureBoxSizeMode.StretchImage;
@@ -442,7 +470,7 @@ namespace dgw
             pictureBox4.Anchor = AnchorStyles.Top;
             pictureBox4.BackColor = Color.SkyBlue;
             pictureBox4.BorderStyle = BorderStyle.FixedSingle;
-            pictureBox4.Location = new Point(349, 31);
+            pictureBox4.Location = new Point(345, 31);
             pictureBox4.Name = "pictureBox4";
             pictureBox4.Size = new Size(80, 78);
             pictureBox4.SizeMode = PictureBoxSizeMode.StretchImage;
@@ -454,7 +482,7 @@ namespace dgw
             pictureBox5.Anchor = AnchorStyles.Top;
             pictureBox5.BackColor = Color.SkyBlue;
             pictureBox5.BorderStyle = BorderStyle.FixedSingle;
-            pictureBox5.Location = new Point(460, 31);
+            pictureBox5.Location = new Point(455, 31);
             pictureBox5.Name = "pictureBox5";
             pictureBox5.Size = new Size(80, 78);
             pictureBox5.SizeMode = PictureBoxSizeMode.StretchImage;
@@ -466,7 +494,7 @@ namespace dgw
             pictureBox6.Anchor = AnchorStyles.Top;
             pictureBox6.BackColor = Color.SkyBlue;
             pictureBox6.BorderStyle = BorderStyle.FixedSingle;
-            pictureBox6.Location = new Point(571, 31);
+            pictureBox6.Location = new Point(565, 31);
             pictureBox6.Name = "pictureBox6";
             pictureBox6.Size = new Size(80, 78);
             pictureBox6.SizeMode = PictureBoxSizeMode.StretchImage;
@@ -477,7 +505,7 @@ namespace dgw
             // 
             label15.Anchor = AnchorStyles.Top;
             label15.AutoSize = true;
-            label15.Location = new Point(682, 121);
+            label15.Location = new Point(677, 121);
             label15.Margin = new Padding(3, 3, 3, 0);
             label15.Name = "label15";
             label15.Size = new Size(82, 18);
@@ -490,7 +518,7 @@ namespace dgw
             label_day4.Anchor = AnchorStyles.Top;
             label_day4.AutoSize = true;
             label_day4.Font = new Font("Arial", 12F);
-            label_day4.Location = new Point(353, 4);
+            label_day4.Location = new Point(350, 4);
             label_day4.Margin = new Padding(3, 3, 3, 0);
             label_day4.Name = "label_day4";
             label_day4.Size = new Size(71, 18);
@@ -502,7 +530,7 @@ namespace dgw
             // 
             label14.Anchor = AnchorStyles.Top;
             label14.AutoSize = true;
-            label14.Location = new Point(570, 121);
+            label14.Location = new Point(564, 121);
             label14.Margin = new Padding(3, 3, 3, 0);
             label14.Name = "label14";
             label14.Size = new Size(82, 18);
@@ -515,7 +543,7 @@ namespace dgw
             pictureBox7.Anchor = AnchorStyles.Top;
             pictureBox7.BackColor = Color.SkyBlue;
             pictureBox7.BorderStyle = BorderStyle.FixedSingle;
-            pictureBox7.Location = new Point(683, 31);
+            pictureBox7.Location = new Point(678, 31);
             pictureBox7.Name = "pictureBox7";
             pictureBox7.Size = new Size(80, 78);
             pictureBox7.SizeMode = PictureBoxSizeMode.StretchImage;
@@ -526,7 +554,7 @@ namespace dgw
             // 
             label13.Anchor = AnchorStyles.Top;
             label13.AutoSize = true;
-            label13.Location = new Point(459, 121);
+            label13.Location = new Point(454, 121);
             label13.Margin = new Padding(3, 3, 3, 0);
             label13.Name = "label13";
             label13.Size = new Size(82, 18);
@@ -539,7 +567,7 @@ namespace dgw
             label_day2.Anchor = AnchorStyles.Top;
             label_day2.AutoSize = true;
             label_day2.Font = new Font("Arial", 12F);
-            label_day2.Location = new Point(134, 4);
+            label_day2.Location = new Point(132, 4);
             label_day2.Margin = new Padding(3, 3, 3, 0);
             label_day2.Name = "label_day2";
             label_day2.Size = new Size(66, 18);
@@ -551,7 +579,7 @@ namespace dgw
             // 
             label12.Anchor = AnchorStyles.Top;
             label12.AutoSize = true;
-            label12.Location = new Point(348, 121);
+            label12.Location = new Point(344, 121);
             label12.Margin = new Padding(3, 3, 3, 0);
             label12.Name = "label12";
             label12.Size = new Size(82, 18);
@@ -564,7 +592,7 @@ namespace dgw
             label_day7.Anchor = AnchorStyles.Top;
             label_day7.AutoSize = true;
             label_day7.Font = new Font("Arial", 12F);
-            label_day7.Location = new Point(693, 4);
+            label_day7.Location = new Point(688, 4);
             label_day7.Margin = new Padding(3, 3, 3, 0);
             label_day7.Name = "label_day7";
             label_day7.Size = new Size(60, 18);
@@ -576,7 +604,7 @@ namespace dgw
             // 
             label11.Anchor = AnchorStyles.Top;
             label11.AutoSize = true;
-            label11.Location = new Point(237, 121);
+            label11.Location = new Point(234, 121);
             label11.Margin = new Padding(3, 3, 3, 0);
             label11.Name = "label11";
             label11.Size = new Size(82, 18);
@@ -589,7 +617,7 @@ namespace dgw
             label_day3.Anchor = AnchorStyles.Top;
             label_day3.AutoSize = true;
             label_day3.Font = new Font("Arial", 12F);
-            label_day3.Location = new Point(232, 4);
+            label_day3.Location = new Point(230, 4);
             label_day3.Margin = new Padding(3, 3, 3, 0);
             label_day3.Name = "label_day3";
             label_day3.Size = new Size(91, 18);
@@ -601,7 +629,7 @@ namespace dgw
             // 
             label10.Anchor = AnchorStyles.Top;
             label10.AutoSize = true;
-            label10.Location = new Point(126, 121);
+            label10.Location = new Point(124, 121);
             label10.Margin = new Padding(3, 3, 3, 0);
             label10.Name = "label10";
             label10.Size = new Size(82, 18);
@@ -626,7 +654,7 @@ namespace dgw
             // 
             label9.Anchor = AnchorStyles.Top;
             label9.AutoSize = true;
-            label9.Location = new Point(15, 121);
+            label9.Location = new Point(14, 121);
             label9.Margin = new Padding(3, 3, 3, 0);
             label9.Name = "label9";
             label9.Size = new Size(82, 18);
@@ -639,7 +667,7 @@ namespace dgw
             label_day6.Anchor = AnchorStyles.Top;
             label_day6.AutoSize = true;
             label_day6.Font = new Font("Arial", 12F);
-            label_day6.Location = new Point(576, 4);
+            label_day6.Location = new Point(570, 4);
             label_day6.Margin = new Padding(3, 3, 3, 0);
             label_day6.Name = "label_day6";
             label_day6.Size = new Size(70, 18);
@@ -652,7 +680,7 @@ namespace dgw
             label_day5.Anchor = AnchorStyles.Top;
             label_day5.AutoSize = true;
             label_day5.Font = new Font("Arial", 12F);
-            label_day5.Location = new Point(474, 4);
+            label_day5.Location = new Point(469, 4);
             label_day5.Margin = new Padding(3, 3, 3, 0);
             label_day5.Name = "label_day5";
             label_day5.Size = new Size(52, 18);
@@ -721,7 +749,7 @@ namespace dgw
             tableLayoutPanel4.RowCount = 2;
             tableLayoutPanel4.RowStyles.Add(new RowStyle());
             tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel4.Size = new Size(137, 298);
+            tableLayoutPanel4.Size = new Size(137, 269);
             tableLayoutPanel4.TabIndex = 48;
             // 
             // label8
@@ -741,7 +769,7 @@ namespace dgw
             richTextBox1.Dock = DockStyle.Fill;
             richTextBox1.Location = new Point(3, 21);
             richTextBox1.Name = "richTextBox1";
-            richTextBox1.Size = new Size(131, 274);
+            richTextBox1.Size = new Size(131, 245);
             richTextBox1.TabIndex = 12;
             richTextBox1.Text = "";
             // 
@@ -820,12 +848,31 @@ namespace dgw
             old_refresh_button.UseVisualStyleBackColor = true;
             old_refresh_button.Click += old_refresh_button_Click;
             // 
+            // buttonPlay
+            // 
+            buttonPlay.Location = new Point(831, 433);
+            buttonPlay.Name = "buttonPlay";
+            buttonPlay.Size = new Size(137, 23);
+            buttonPlay.TabIndex = 49;
+            buttonPlay.Text = "Playground";
+            buttonPlay.UseVisualStyleBackColor = true;
+            buttonPlay.Click += buttonPlay_Click;
+            // 
+            // panelPlay
+            // 
+            panelPlay.Location = new Point(974, 14);
+            panelPlay.Name = "panelPlay";
+            panelPlay.Size = new Size(207, 530);
+            panelPlay.TabIndex = 50;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
-            ClientSize = new Size(980, 556);
+            ClientSize = new Size(1184, 556);
+            Controls.Add(panelPlay);
+            Controls.Add(buttonPlay);
             Controls.Add(tableLayoutPanel4);
             Controls.Add(old_refresh_button);
             Controls.Add(get_data_button);
@@ -929,5 +976,9 @@ namespace dgw
         private TabPage tabPageSnow;
         private LiveChartsCore.SkiaSharpView.WinForms.CartesianChart cartesianChart5;
         private TableLayoutPanel tableLayoutPanel4;
+        private Button buttonPlay;
+        private Panel panelPlay;
+        private Button button2;
+        private Button button1;
     }
 }

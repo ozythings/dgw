@@ -2,10 +2,12 @@ using System.Diagnostics;
 
 namespace RainDroplets {
     public partial class RainSimulationControl : UserControl {
-        private const int MAX_RAINDROPS = 300;
-        private const float BASE_GRAVITY = 500f;
-        private const float RAINDROP_BASE_SPEED = 5f;
+        private int MAX_RAINDROPS;
+        private float BASE_GRAVITY;
+        private float RAINDROP_BASE_SPEED;
+        private float BOUNCE_SPEED;
         private const int POINTER_RADIUS = 10;
+        public Brush Color = Brushes.Blue;
 
         private readonly Random random;
         private readonly System.Windows.Forms.Timer rainTimer;
@@ -13,10 +15,20 @@ namespace RainDroplets {
         private readonly Stopwatch stopwatch;
         private Point cursorPosition;
 
-        public RainSimulationControl() {
+        public RainSimulationControl(
+            int maxRaindrops = 300,
+            float baseGravity = 200f,
+            float raindropBaseSpeed = 5f,
+            float bounceSpeed = 50
+        ) {
+            MAX_RAINDROPS = maxRaindrops;
+            BASE_GRAVITY = baseGravity;
+            RAINDROP_BASE_SPEED = raindropBaseSpeed;
+            BOUNCE_SPEED = bounceSpeed;
+
             random = new Random();
             this.DoubleBuffered = true;
-            this.Size = new Size(800, 600);  // Default size, can be customized
+            this.Size = new Size(800, 600);
             raindrops = new List<Raindrop>();
             stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -62,7 +74,7 @@ namespace RainDroplets {
                     float ny = dy / distance;
 
                     // Add some randomness to make it more interesting
-                    float speed = 50;
+                    float speed = BOUNCE_SPEED;
                     float randomAngle = (float)(random.NextDouble() * Math.PI / 4 - Math.PI / 8);
                     float cos = (float)Math.Cos(randomAngle);
                     float sin = (float)Math.Sin(randomAngle);
@@ -87,7 +99,7 @@ namespace RainDroplets {
 
         private void RainSimulationControl_Paint(object sender, PaintEventArgs e) {
             foreach (var drop in raindrops) {
-                e.Graphics.FillEllipse(Brushes.Blue, drop.Position.X, drop.Position.Y, 5, 5);
+                e.Graphics.FillEllipse(Color ?? Brushes.Blue, drop.Position.X, drop.Position.Y, 5, 5);
             }
             e.Graphics.FillEllipse(Brushes.Red, cursorPosition.X - POINTER_RADIUS,
                 cursorPosition.Y - POINTER_RADIUS, POINTER_RADIUS * 2, POINTER_RADIUS * 2);

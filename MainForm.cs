@@ -21,6 +21,7 @@ namespace dgw {
         private string api_key;
 
         private static bool city_flag = true;
+        private static bool play_flag = false;
 
         private int limit = 1;
 
@@ -37,6 +38,8 @@ namespace dgw {
 
         private string old_file_filepath;
 
+        public int snow_or_rain = -1;
+
         public MainForm() {
 
             InitializeComponent();
@@ -44,10 +47,6 @@ namespace dgw {
 
         private void MainForm_Load(object sender, EventArgs e) {
 
-            //var rainControl = new RainSimulationControl {
-            //    Dock = DockStyle.Fill  // Fill the form, or you can set a specific size
-            //};
-            //this.Controls.Add(rainControl);
 
             cartesianChart1.ZoomMode = LiveChartsCore.Measure.ZoomAndPanMode.X;
 
@@ -63,6 +62,7 @@ namespace dgw {
             }
 
             comboBox1.ForeColor = Color.Gray;
+            this.Size = new Size(990, 595);
 
         }
 
@@ -310,8 +310,8 @@ namespace dgw {
             List<int> temperatures,
             List<decimal> wind_speeds,
             List<int> wind_degrees,
-            List<decimal>rain_precs,
-            List<decimal>snow_precs
+            List<decimal> rain_precs,
+            List<decimal> snow_precs
             ) {
             cartesianChart1.Series = new ISeries[] {
                 new LineSeries<int> {
@@ -515,8 +515,7 @@ namespace dgw {
 
             var files = MetaData.get_old_files();
 
-            var matching_files = files.Where(file =>
-            {
+            var matching_files = files.Where(file => {
                 string filename_without_extension = Path.GetFileNameWithoutExtension(file.Name);
                 string[] parts = filename_without_extension.Split('_');
 
@@ -543,7 +542,7 @@ namespace dgw {
         }
 
         // this inits weather data from a JSON response or file
-        
+
         public async Task<int> init_data(bool is_old = false, string jsonFilePath = "") {
             WeatherResponse weather = null;
             WeatherClient weather_client = new WeatherClient();
@@ -635,6 +634,21 @@ namespace dgw {
 
                 // this is for icons and for primary
                 var primary_icon = weather.current.weather[0].icon;
+
+                if (
+                    primary_icon == "09d" || primary_icon == "09n" ||
+                    primary_icon == "10d" || primary_icon == "10d"
+                    ) {
+
+                    this.snow_or_rain = 1;
+
+                } else if (
+                    primary_icon == "13d" || primary_icon == "13n"
+                    ) {
+                    this.snow_or_rain = 0;
+                }
+
+
                 var primary_temp = weather.current.temp;
                 var description = weather.current.weather[0].description;
                 pictureBox8.Image = Image.FromFile($"./icons/{primary_icon}.png");
@@ -661,7 +675,7 @@ namespace dgw {
 
         private async void get_data_button_Click(object sender, EventArgs e) {
             get_old_data();
-            await init_data(true,old_file_filepath);
+            await init_data(true, old_file_filepath);
         }
 
         private void comboBox1_Click(object sender, EventArgs e) {
@@ -696,6 +710,97 @@ namespace dgw {
                 second_hourly_rain_precs,
                 second_hourly_snow_precs
                 );
+        }
+
+        private void buttonPlay_Click(object sender, EventArgs e) {
+
+            if (play_flag == false) {
+
+                this.Size = new Size(1200, 595);
+                play_flag = true;
+                this.buttonPlay.Text = "Stop";
+
+
+                if (this.snow_or_rain == 1) {
+
+                    var rain = new RainSimulationControl {
+                        Dock = DockStyle.Fill
+                    };
+
+                    this.panelPlay.Controls.Add(rain);
+
+                } else if (this.snow_or_rain == 0) {
+
+                    this.panelPlay.BackColor = Color.Black;
+
+                    var snow = new RainSimulationControl(300, 50f, 10f, 10) {
+                        Dock = DockStyle.Fill
+                    };
+                    snow.Color = Brushes.White;
+                    this.panelPlay.Controls.Add(snow);
+                }
+
+            } else {
+
+                this.Size = new Size(990, 595);
+
+                this.panelPlay.Controls.Clear();
+                play_flag = false;
+                this.buttonPlay.Text = "Playground";
+            }
+
+        }
+
+        private void button1_Click(object sender, EventArgs e) {
+
+             if (play_flag == false) {
+
+                this.Size = new Size(1200, 595);
+                play_flag = true;
+                this.buttonPlay.Text = "Stop";
+
+                this.panelPlay.Controls.Clear();
+                this.panelPlay.BackColor = Color.White;
+                var rain = new RainSimulationControl {
+                    Dock = DockStyle.Fill
+                };
+
+                this.panelPlay.Controls.Add(rain);
+
+            } else {
+
+                this.Size = new Size(990, 595);
+
+                this.panelPlay.Controls.Clear();
+                play_flag = false;
+                this.buttonPlay.Text = "Playground";
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e) {
+
+             if (play_flag == false) {
+
+                this.Size = new Size(1200, 595);
+                play_flag = true;
+                this.buttonPlay.Text = "Stop";
+
+                this.panelPlay.Controls.Clear();
+                this.panelPlay.BackColor = Color.Black;
+                var snow = new RainSimulationControl(300, 50f, 10f, 10) {
+                    Dock = DockStyle.Fill
+                };
+                snow.Color = Brushes.White;
+                this.panelPlay.Controls.Add(snow);
+
+            } else {
+
+                this.Size = new Size(990, 595);
+
+                this.panelPlay.Controls.Clear();
+                play_flag = false;
+                this.buttonPlay.Text = "Playground";
+            }
         }
     }
 }
