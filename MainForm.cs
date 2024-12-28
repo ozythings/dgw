@@ -623,6 +623,9 @@ namespace dgw {
                 label19.Text = $"Humidity: {weather.current.humidity}%";
                 label21.Text = $"Wind: {weather.current.wind_speed} m/s";
                 label22.Text = $"Wind Degree: {weather.current.wind_deg}° / {wind_deg_string}";
+                label23.Text = $"Pressure: {weather.current.pressure} hPa";
+                label20.Text = $"Visibility: {weather.current.visibility / 1000} km";
+                label2.Text = $"UV Index: {weather.current.uvi}";
 
                 // this changes the temp values
                 int index = 0;
@@ -635,15 +638,19 @@ namespace dgw {
                 // this is for icons and for primary
                 var primary_icon = weather.current.weather[0].icon;
 
+                // this looks for first daily weather icon
+                var daily_icon = weather.daily[0].weather[0].icon;
+
+                // if it rains or snows that day playground works accordingly.
                 if (
-                    primary_icon == "09d" || primary_icon == "09n" ||
-                    primary_icon == "10d" || primary_icon == "10d"
+                    daily_icon == "09d" || daily_icon == "09n" ||
+                    daily_icon == "10d" || daily_icon == "10d"
                     ) {
 
                     this.snow_or_rain = 1;
 
                 } else if (
-                    primary_icon == "13d" || primary_icon == "13n"
+                    daily_icon == "13d" || daily_icon == "13n"
                     ) {
                     this.snow_or_rain = 0;
                 }
@@ -712,34 +719,46 @@ namespace dgw {
                 );
         }
 
-        private void buttonPlay_Click(object sender, EventArgs e) {
 
+        private void panelPlay_MouseEnter(object sender, EventArgs e) {
+            Cursor.Hide();
+        }
+
+        private void panelPlay_MouseLeave(object sender, EventArgs e) {
+            Cursor.Show();
+        }
+
+        private void buttonPlay_Click(object sender, EventArgs e) {
             if (play_flag == false) {
 
                 this.Size = new Size(1200, 595);
                 play_flag = true;
                 this.buttonPlay.Text = "Stop";
-
+                this.panelPlay.Controls.Clear();
+                this.panelPlay.BackColor = Color.White;
 
                 if (this.snow_or_rain == 1) {
 
                     var rain = new RainSimulationControl {
                         Dock = DockStyle.Fill
                     };
+                    rain.MouseEnter += panelPlay_MouseEnter;
+                    rain.MouseLeave += panelPlay_MouseLeave;
 
                     this.panelPlay.Controls.Add(rain);
-
                 } else if (this.snow_or_rain == 0) {
 
                     this.panelPlay.BackColor = Color.Black;
 
                     var snow = new RainSimulationControl(300, 50f, 10f, 10) {
-                        Dock = DockStyle.Fill
+                        Dock = DockStyle.Fill,
+                        Color = Brushes.White
                     };
-                    snow.Color = Brushes.White;
+                    snow.MouseEnter += panelPlay_MouseEnter;
+                    snow.MouseLeave += panelPlay_MouseLeave;
+
                     this.panelPlay.Controls.Add(snow);
                 }
-
             } else {
 
                 this.Size = new Size(990, 595);
@@ -748,9 +767,9 @@ namespace dgw {
                 play_flag = false;
                 this.buttonPlay.Text = "Playground";
             }
-
         }
 
+        // button1 and button2 is for debug purposes
         private void button1_Click(object sender, EventArgs e) {
 
              if (play_flag == false) {
@@ -764,6 +783,9 @@ namespace dgw {
                 var rain = new RainSimulationControl {
                     Dock = DockStyle.Fill
                 };
+
+                rain.MouseEnter += panelPlay_MouseEnter;
+                rain.MouseLeave += panelPlay_MouseLeave;
 
                 this.panelPlay.Controls.Add(rain);
 
@@ -790,6 +812,10 @@ namespace dgw {
                 var snow = new RainSimulationControl(300, 50f, 10f, 10) {
                     Dock = DockStyle.Fill
                 };
+
+                snow.MouseEnter += panelPlay_MouseEnter;
+                snow.MouseLeave += panelPlay_MouseLeave;
+
                 snow.Color = Brushes.White;
                 this.panelPlay.Controls.Add(snow);
 

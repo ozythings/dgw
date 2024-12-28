@@ -32,15 +32,13 @@ namespace dgw
         private void InitializeComponent() {
             components = new System.ComponentModel.Container();
             panel1 = new Panel();
-            button2 = new Button();
-            button1 = new Button();
             label1 = new Label();
             tableLayoutPanel3 = new TableLayoutPanel();
-            label20 = new Label();
             label21 = new Label();
             label22 = new Label();
             label23 = new Label();
             label19 = new Label();
+            label20 = new Label();
             tabControl1 = new TabControl();
             tabPageTemp = new TabPage();
             cartesianChart1 = new LiveChartsCore.SkiaSharpView.WinForms.CartesianChart();
@@ -80,6 +78,8 @@ namespace dgw
             label17 = new Label();
             label16 = new Label();
             pictureBox8 = new PictureBox();
+            button2 = new Button();
+            button1 = new Button();
             tableLayoutPanel4 = new TableLayoutPanel();
             label8 = new Label();
             richTextBox1 = new RichTextBox();
@@ -94,6 +94,7 @@ namespace dgw
             old_refresh_button = new Button();
             buttonPlay = new Button();
             panelPlay = new Panel();
+            label2 = new Label();
             panel1.SuspendLayout();
             tableLayoutPanel3.SuspendLayout();
             tabControl1.SuspendLayout();
@@ -121,8 +122,6 @@ namespace dgw
             // panel1
             // 
             panel1.BackColor = Color.White;
-            panel1.Controls.Add(button2);
-            panel1.Controls.Add(button1);
             panel1.Controls.Add(label1);
             panel1.Controls.Add(tableLayoutPanel3);
             panel1.Controls.Add(tabControl1);
@@ -134,28 +133,6 @@ namespace dgw
             panel1.Name = "panel1";
             panel1.Size = new Size(802, 532);
             panel1.TabIndex = 1;
-            // 
-            // button2
-            // 
-            button2.Font = new Font("Arial", 9F);
-            button2.Location = new Point(241, 91);
-            button2.Name = "button2";
-            button2.Size = new Size(20, 20);
-            button2.TabIndex = 49;
-            button2.Text = "S";
-            button2.UseVisualStyleBackColor = true;
-            button2.Click += button2_Click;
-            // 
-            // button1
-            // 
-            button1.Font = new Font("Arial", 9F);
-            button1.Location = new Point(219, 91);
-            button1.Name = "button1";
-            button1.Size = new Size(20, 20);
-            button1.TabIndex = 48;
-            button1.Text = "R";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
             // 
             // label1
             // 
@@ -171,11 +148,12 @@ namespace dgw
             tableLayoutPanel3.ColumnCount = 2;
             tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 45.4545441F));
             tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 54.5454559F));
-            tableLayoutPanel3.Controls.Add(label20, 0, 2);
+            tableLayoutPanel3.Controls.Add(label2, 0, 2);
             tableLayoutPanel3.Controls.Add(label21, 1, 0);
             tableLayoutPanel3.Controls.Add(label22, 1, 1);
             tableLayoutPanel3.Controls.Add(label23, 0, 0);
             tableLayoutPanel3.Controls.Add(label19, 1, 2);
+            tableLayoutPanel3.Controls.Add(label20, 0, 1);
             tableLayoutPanel3.Location = new Point(322, 9);
             tableLayoutPanel3.Name = "tableLayoutPanel3";
             tableLayoutPanel3.RowCount = 3;
@@ -184,19 +162,6 @@ namespace dgw
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
             tableLayoutPanel3.Size = new Size(473, 100);
             tableLayoutPanel3.TabIndex = 44;
-            // 
-            // label20
-            // 
-            label20.Anchor = AnchorStyles.Left;
-            label20.AutoSize = true;
-            label20.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label20.Location = new Point(3, 75);
-            label20.Margin = new Padding(3, 3, 3, 0);
-            label20.Name = "label20";
-            label20.Size = new Size(48, 18);
-            label20.TabIndex = 34;
-            label20.Text = "Wind:";
-            label20.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // label21
             // 
@@ -249,6 +214,19 @@ namespace dgw
             label19.TabIndex = 35;
             label19.Text = "Humidity:";
             label19.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // label20
+            // 
+            label20.Anchor = AnchorStyles.Left;
+            label20.AutoSize = true;
+            label20.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label20.Location = new Point(3, 42);
+            label20.Margin = new Padding(3, 3, 3, 0);
+            label20.Name = "label20";
+            label20.Size = new Size(70, 18);
+            label20.TabIndex = 34;
+            label20.Text = "Visibility:";
+            label20.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // tabControl1
             // 
@@ -738,6 +716,28 @@ namespace dgw
             pictureBox8.TabIndex = 30;
             pictureBox8.TabStop = false;
             // 
+            // button2
+            // 
+            button2.Font = new Font("Arial", 9F);
+            button2.Location = new Point(945, 433);
+            button2.Name = "button2";
+            button2.Size = new Size(23, 23);
+            button2.TabIndex = 49;
+            button2.Text = "S";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
+            // 
+            // button1
+            // 
+            button1.Font = new Font("Arial", 9F);
+            button1.Location = new Point(923, 433);
+            button1.Name = "button1";
+            button1.Size = new Size(23, 23);
+            button1.TabIndex = 48;
+            button1.Text = "R";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
+            // 
             // tableLayoutPanel4
             // 
             tableLayoutPanel4.ColumnCount = 1;
@@ -852,7 +852,7 @@ namespace dgw
             // 
             buttonPlay.Location = new Point(831, 433);
             buttonPlay.Name = "buttonPlay";
-            buttonPlay.Size = new Size(137, 23);
+            buttonPlay.Size = new Size(91, 23);
             buttonPlay.TabIndex = 49;
             buttonPlay.Text = "Playground";
             buttonPlay.UseVisualStyleBackColor = true;
@@ -865,13 +865,28 @@ namespace dgw
             panelPlay.Size = new Size(207, 530);
             panelPlay.TabIndex = 50;
             // 
+            // label2
+            // 
+            label2.Anchor = AnchorStyles.Left;
+            label2.AutoSize = true;
+            label2.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label2.Location = new Point(3, 75);
+            label2.Margin = new Padding(3, 3, 3, 0);
+            label2.Name = "label2";
+            label2.Size = new Size(74, 18);
+            label2.TabIndex = 39;
+            label2.Text = "UV Index:";
+            label2.TextAlign = ContentAlignment.MiddleCenter;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
             ClientSize = new Size(1184, 556);
+            Controls.Add(button2);
             Controls.Add(panelPlay);
+            Controls.Add(button1);
             Controls.Add(buttonPlay);
             Controls.Add(tableLayoutPanel4);
             Controls.Add(old_refresh_button);
@@ -980,5 +995,6 @@ namespace dgw
         private Panel panelPlay;
         private Button button2;
         private Button button1;
+        private Label label2;
     }
 }

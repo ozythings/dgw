@@ -13,7 +13,7 @@ namespace RainDroplets {
         private readonly System.Windows.Forms.Timer rainTimer;
         private readonly List<Raindrop> raindrops;
         private readonly Stopwatch stopwatch;
-        private Point cursorPosition;
+        private Point pointerPosition;
 
         public RainSimulationControl(
             int maxRaindrops = 300,
@@ -65,8 +65,8 @@ namespace RainDroplets {
                     drop.Position.Y + drop.Velocity.Y * deltaTime
                 );
 
-                float dx = drop.Position.X - cursorPosition.X;
-                float dy = drop.Position.Y - cursorPosition.Y;
+                float dx = drop.Position.X - pointerPosition.X;
+                float dy = drop.Position.Y - pointerPosition.Y;
                 if (Math.Sqrt(dx * dx + dy * dy) < POINTER_RADIUS) {
                     // Normalize the direction vector
                     float distance = (float)Math.Sqrt(dx * dx + dy * dy);
@@ -94,15 +94,16 @@ namespace RainDroplets {
         }
 
         private void RainSimulationControl_MouseMove(object sender, MouseEventArgs e) {
-            cursorPosition = e.Location;
+            pointerPosition = e.Location;
         }
 
         private void RainSimulationControl_Paint(object sender, PaintEventArgs e) {
             foreach (var drop in raindrops) {
                 e.Graphics.FillEllipse(Color ?? Brushes.Blue, drop.Position.X, drop.Position.Y, 5, 5);
             }
-            e.Graphics.FillEllipse(Brushes.Red, cursorPosition.X - POINTER_RADIUS,
-                cursorPosition.Y - POINTER_RADIUS, POINTER_RADIUS * 2, POINTER_RADIUS * 2);
+            e.Graphics.FillEllipse(Brushes.Gold, pointerPosition.X - POINTER_RADIUS,
+                pointerPosition.Y - POINTER_RADIUS, POINTER_RADIUS * 2, POINTER_RADIUS * 2);
+            
         }
 
         public class Raindrop {
