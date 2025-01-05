@@ -79,6 +79,9 @@ namespace dgw {
             // this is for the easter egg
             this.LocationChanged += MainForm_LocationChanged;
 
+            this.comboBox1.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            this.comboBox1.AutoCompleteSource = AutoCompleteSource.ListItems;
+
         }
 
         private void MainForm_LocationChanged(object sender, EventArgs e) {

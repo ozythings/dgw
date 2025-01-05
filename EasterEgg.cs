@@ -1,3 +1,4 @@
+using System.Media;
 using dgw;
 
 namespace EasterEgg {
@@ -11,6 +12,8 @@ namespace EasterEgg {
         private PictureBox pictureBox1;
         private Button exit_button;
 
+        public SoundPlayer player;
+
         // this could be referenced as MainForm but this allow Form argument in constructor method
         // in this way we could also use other forms
         private Form main_form; // reference to MainForm
@@ -19,6 +22,7 @@ namespace EasterEgg {
             main_form = parent_form; // store reference to MainForm
             InitializeComponent();
             Setup();
+            player = new SoundPlayer($"./easteregg/easteregg.wav");
         }
 
         private void Setup() {
@@ -30,7 +34,7 @@ namespace EasterEgg {
             };
             Controls.Add(pictureBox1);
 
-            pictureBox1.Image = Image.FromFile($"./icons/easteregg.png");
+            pictureBox1.Image = Image.FromFile($"./easteregg/easteregg.png");
 
             exit_button = new Button {
                 Text = "Exit",
@@ -39,7 +43,9 @@ namespace EasterEgg {
                 Size = ((MainForm)main_form).buttonPlay.Size,
                 Location = new Point(ClientSize.Width - 85, ClientSize.Height - 40),
             };
+
             exit_button.Click += (s, e) => {
+                player.Stop();
                 main_form.Location = this.Location;
                 main_form.Show(); // show MainForm when exiting
                 Close();
@@ -119,8 +125,12 @@ namespace EasterEgg {
 
         private void InitializeComponent() {
             SuspendLayout();
+
             this.ClientSize = main_form.ClientSize;
-            this.Location = main_form.Location; 
+            this.Location = main_form.Location;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+
             Name = "FormEE";
             Load += FormEE_Load;
             ResumeLayout(false);
@@ -129,6 +139,7 @@ namespace EasterEgg {
         private void FormEE_Load(object sender, EventArgs e) {
             pictureBox1.Visible = true;
             is_bouncing = true;
+            player.Play();
             main_form.Hide(); // hide MainForm when FormEE loads
         }
     }

@@ -23,5 +23,5 @@ packages/
 *.exe
 *.pdb
 
-# Ignore specific files
-/icons/easteregg.png
+# Ignore specific folders
+easteregg/
