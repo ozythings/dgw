@@ -196,17 +196,13 @@ namespace Weather {
 
         public async Task<List<Alert>> get_alerts(WeatherResponse weather_response) {
 
-            var alerts = new List<Alert>();
-
-            if (weather_response != null && weather_response.hourly != null) {
-
-                foreach (var alert in weather_response.alerts) {
-                    alerts.Add(alert);
-                }
+            if (weather_response?.alerts != null) {
+                return weather_response.alerts;
             }
 
-            return alerts;
+            return new List<Alert>();
         }
+
 
         public async Task<(List<int> first24, List<int> second24)> get_hourly_temps(WeatherResponse weather_response) {
             var first24 = new List<int>();

@@ -10,6 +10,7 @@ using LiveChartsCore.SkiaSharpView.WinForms;
 using RainDroplets;
 using Metadata;
 using Weather;
+using EasterEgg;
 
 namespace dgw {
 
@@ -22,6 +23,11 @@ namespace dgw {
 
         private static bool city_flag = true;
         private static bool play_flag = false;
+        private static bool alert_flag = false;
+
+        private static int easteregg_flag = -1;
+        private Point last_form_position;
+        private DateTime last_shake_time;
 
         private int limit = 1;
 
@@ -40,9 +46,14 @@ namespace dgw {
 
         public int snow_or_rain = -1;
 
+
         public MainForm() {
 
             InitializeComponent();
+
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
         }
 
         private void MainForm_Load(object sender, EventArgs e) {
@@ -64,6 +75,44 @@ namespace dgw {
             comboBox1.ForeColor = Color.Gray;
             this.Size = new Size(990, 595);
 
+
+            // this is for the easter egg
+            this.LocationChanged += MainForm_LocationChanged;
+
+        }
+
+        private void MainForm_LocationChanged(object sender, EventArgs e) {
+
+            if (easteregg_flag == 1) {
+                var current_position = this.Location;
+                var movement = Math.Abs(current_position.X - last_form_position.X) +
+                               Math.Abs(current_position.Y - last_form_position.Y);
+
+                // If the form shakes too much, show and bounce the PictureBox
+                if (movement > 50) {
+                    var now = DateTime.Now;
+                    if ((now - last_shake_time).TotalMilliseconds < 500) {
+                        var easteregg = new FormEE(this);
+                        easteregg.Show();
+                        easteregg_flag = 0;
+                    }
+
+                    last_shake_time = now;
+                }
+
+                last_form_position = current_position;
+            }
+
+        }
+
+        private void button3_Click(object sender, EventArgs e) {
+            if (easteregg_flag == -1) {
+                easteregg_flag = 1;
+                this.button3.BackColor = Color.LightGreen;
+            } else {
+                easteregg_flag = -1;
+                this.button3.BackColor = Color.Transparent;
+            }
         }
 
         private async void refresh_button_Click(object sender, EventArgs e) {
@@ -73,6 +122,7 @@ namespace dgw {
 
             this.reorder_daylist();
             await init_data();
+            richTextBox2.Text = richTextBox1.Text;
 
             progressBar2.Value = 100;
 
@@ -234,7 +284,11 @@ namespace dgw {
                 new ColumnSeries<decimal>
                 {
                     Values = this.first_hourly_wind_speeds,
-                    YToolTipLabelFormatter = point => $"{point.Coordinate.PrimaryValue} m/s"
+                    YToolTipLabelFormatter = point => {
+                        var speed_mps = point.Coordinate.PrimaryValue;
+                        var speed_kmph = speed_mps * 3.6;
+                        return $"{speed_mps} m/s | {speed_kmph:F2} km/h";
+                    }
                 },
             };
 
@@ -265,7 +319,7 @@ namespace dgw {
                 {
                     Values = this.first_hourly_rain_precs,
                     YToolTipLabelFormatter = point => {
-                        return $"{point.Coordinate.PrimaryValue}mm";
+                        return $"{point.Coordinate.PrimaryValue}mm/h";
                     }
                 },
             };
@@ -281,7 +335,7 @@ namespace dgw {
                 {
                     Values = this.first_hourly_snow_precs,
                     YToolTipLabelFormatter = point => {
-                        return $"{point.Coordinate.PrimaryValue}mm";
+                        return $"{point.Coordinate.PrimaryValue}mm/h";
                     }
                 },
             };
@@ -323,7 +377,11 @@ namespace dgw {
             cartesianChart2.Series = new ISeries[] {
                 new ColumnSeries<decimal> {
                     Values = wind_speeds,
-                    YToolTipLabelFormatter = point => $"{point.Coordinate.PrimaryValue} m/s"
+                    YToolTipLabelFormatter = point => {
+                        var speed_mps = point.Coordinate.PrimaryValue;
+                        var speed_kmph = speed_mps * 3.6;
+                        return $"{speed_mps} m/s | {speed_kmph:F2} km/h";
+                    }
                 }
             };
 
@@ -338,13 +396,13 @@ namespace dgw {
             cartesianChart4.Series = new ISeries[] {
                 new LineSeries<decimal> {
                     Values = rain_precs,
-                    YToolTipLabelFormatter = point => $"{point.Coordinate.PrimaryValue}mm"
+                    YToolTipLabelFormatter = point => $"{point.Coordinate.PrimaryValue}mm/h"
                 }
             };
             cartesianChart5.Series = new ISeries[] {
                 new LineSeries<decimal> {
                     Values = snow_precs,
-                    YToolTipLabelFormatter = point => $"{point.Coordinate.PrimaryValue}mm"
+                    YToolTipLabelFormatter = point => $"{point.Coordinate.PrimaryValue}mm/h"
                 }
             };
         }
@@ -553,7 +611,8 @@ namespace dgw {
                     string file_contents = File.ReadAllText(jsonFilePath);
                     weather = JsonSerializer.Deserialize<WeatherResponse>(file_contents);
                     city = comboBoxOCity.Text;
-                    richTextBox1.Text = $"Name: {city}\nLatitude: {weather.lat}\nLongitude: {weather.lon}";
+
+                    richTextBox1.Text = $"Name: {city}\nLatitude: {weather.lat}\nLongitude: {weather.lon}\n\n";
                 } else {
                     richTextBox1.Text = "No saved weather data found in the specified file.";
                     return 0;
@@ -569,7 +628,7 @@ namespace dgw {
                     return 0;
                 }
 
-                richTextBox1.Text = $"Name: {location.name}\nLatitude: {location.lat:F4}\nLongitude: {location.lon:F4}";
+                richTextBox1.Text = $"Name: {location.name}\nLatitude: {location.lat:F4}\nLongitude: {location.lon:F4}\n\n";
 
                 string weatherUrl = $"https://api.openweathermap.org/data/3.0/onecall?lat={location.lat}&lon={location.lon}&appid={api_key}&units=metric";
                 weather = await weather_client.get_weather_async(weatherUrl);
@@ -593,6 +652,27 @@ namespace dgw {
                 var (first_hourly_wind_speeds, second_hourly_wind_speeds) = await weather_client.get_hourly_wind_speeds(weather);
                 var (first_hourly_rain_precs, second_hourly_rain_precs) = await weather_client.get_hourly_precs(weather);
                 var (first_hourly_snow_precs, second_hourly_snow_precs) = await weather_client.get_hourly_precs(weather, false);
+
+
+                var alerts = await weather_client.get_alerts(weather);
+                if (alerts.Any()) {
+                    foreach (var alert in alerts) {
+                        if (alert != null) {
+                            //var eventInfo = string.IsNullOrWhiteSpace(alert.Event) ? "Event not available" : alert.Event;
+                            var sender_info = string.IsNullOrWhiteSpace(alert.senderName) ? "Sender not available" : alert.senderName;
+                            var description_info = string.IsNullOrWhiteSpace(alert.description) ? "Description not available" : alert.description;
+
+                            //richTextBox1.AppendText($"Event: {eventInfo}\n");
+                            richTextBox1.AppendText($"Sender: {sender_info}\n");
+                            richTextBox1.AppendText($"Description: {description_info}\n");
+                            richTextBox1.AppendText(new string('-', 21) + "\n"); // seperator
+                        } else {
+                            richTextBox1.AppendText("Alert information is not available.\n");
+                        }
+                    }
+                } else {
+                    richTextBox1.AppendText("No active alerts.\n");
+                }
 
                 pictureBox1.BackColor = Color.Turquoise;
                 pictureBox2.BackColor = Color.SkyBlue;
@@ -660,7 +740,7 @@ namespace dgw {
                 var description = weather.current.weather[0].description;
                 pictureBox8.Image = Image.FromFile($"./icons/{primary_icon}.png");
                 label16.Text = ((int)primary_temp).ToString();
-                if (!is_old) label1.Text = description;
+                label1.Text = description;
 
                 index = 0;
                 foreach (var icon in icons) {
@@ -683,6 +763,7 @@ namespace dgw {
         private async void get_data_button_Click(object sender, EventArgs e) {
             get_old_data();
             await init_data(true, old_file_filepath);
+            richTextBox2.Text = richTextBox1.Text;
         }
 
         private void comboBox1_Click(object sender, EventArgs e) {
@@ -765,14 +846,14 @@ namespace dgw {
 
                 this.panelPlay.Controls.Clear();
                 play_flag = false;
-                this.buttonPlay.Text = "Playground";
+                this.buttonPlay.Text = "Play";
             }
         }
 
         // button1 and button2 is for debug purposes
         private void button1_Click(object sender, EventArgs e) {
 
-             if (play_flag == false) {
+            if (play_flag == false) {
 
                 this.Size = new Size(1200, 595);
                 play_flag = true;
@@ -795,13 +876,13 @@ namespace dgw {
 
                 this.panelPlay.Controls.Clear();
                 play_flag = false;
-                this.buttonPlay.Text = "Playground";
+                this.buttonPlay.Text = "Play";
             }
         }
 
         private void button2_Click(object sender, EventArgs e) {
 
-             if (play_flag == false) {
+            if (play_flag == false) {
 
                 this.Size = new Size(1200, 595);
                 play_flag = true;
@@ -825,7 +906,24 @@ namespace dgw {
 
                 this.panelPlay.Controls.Clear();
                 play_flag = false;
-                this.buttonPlay.Text = "Playground";
+                this.buttonPlay.Text = "Play";
+            }
+        }
+
+        private void buttonBigger_Click(object sender, EventArgs e) {
+            if (alert_flag == false) {
+
+                this.Size = new Size(990, 900);
+                alert_flag = true;
+                this.buttonBigger.Text = "Smaller Window";
+
+                richTextBox2.Text = richTextBox1.Text;
+
+            } else {
+
+                this.Size = new Size(990, 595);
+                alert_flag = false;
+                this.buttonBigger.Text = "Bigger Window";
             }
         }
     }

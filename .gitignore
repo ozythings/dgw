@@ -22,3 +22,6 @@ packages/
 *.dll
 *.exe
 *.pdb
+
+# Ignore specific files
+/icons/easteregg.png
