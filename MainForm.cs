@@ -848,6 +848,7 @@ namespace dgw {
                 this.Size = new Size(990, 595);
 
                 this.panelPlay.Controls.Clear();
+                this.panelPlay.BackColor = Color.White;
                 play_flag = false;
                 this.buttonPlay.Text = "Play";
             }
@@ -878,6 +879,7 @@ namespace dgw {
                 this.Size = new Size(990, 595);
 
                 this.panelPlay.Controls.Clear();
+                this.panelPlay.BackColor = Color.White;
                 play_flag = false;
                 this.buttonPlay.Text = "Play";
             }
@@ -908,6 +910,7 @@ namespace dgw {
                 this.Size = new Size(990, 595);
 
                 this.panelPlay.Controls.Clear();
+                this.panelPlay.BackColor = Color.White;
                 play_flag = false;
                 this.buttonPlay.Text = "Play";
             }
