@@ -270,7 +270,7 @@ namespace dgw {
 
             string[] days = lang_flag ? original_days : turkish_days;
 
-            if (lang_flag == false) {
+            if (lang_flag) {
                 Dictionary<string, string> turkish_to_english = new Dictionary<string, string> {
                     { "Pazartesi", "Monday" },
                     { "Salı", "Tuesday" },
@@ -283,8 +283,24 @@ namespace dgw {
 
                 if (turkish_to_english.ContainsKey(start_day)) {
                     start_day = turkish_to_english[start_day];
-                } else {
-                    throw new ArgumentException("Invalid day string.");
+                } else if (!Array.Exists(original_days, day => day == start_day)) {
+                    throw new ArgumentException($"Invalid day string (Expected English or Turkish input): {start_day}");
+                }
+            } else {
+                Dictionary<string, string> english_to_turkish = new Dictionary<string, string> {
+                    { "Monday", "Pazartesi" },
+                    { "Tuesday", "Salı" },
+                    { "Wednesday", "Çarşamba" },
+                    { "Thursday", "Perşembe" },
+                    { "Friday", "Cuma" },
+                    { "Saturday", "Cumartesi" },
+                    { "Sunday", "Pazar" }
+                };
+
+                if (english_to_turkish.ContainsKey(start_day)) {
+                    start_day = english_to_turkish[start_day];
+                } else if (!Array.Exists(turkish_days, day => day == start_day)) {
+                    throw new ArgumentException($"Invalid day string (Expected English or Turkish input): {start_day}");
                 }
             }
 
@@ -294,7 +310,7 @@ namespace dgw {
             }
 
             if (!day_to_index.ContainsKey(start_day)) {
-                throw new ArgumentException("Invalid day string.");
+                throw new ArgumentException($"Invalid day string in final check: {start_day}");
             }
 
             int start_day_index = day_to_index[start_day];

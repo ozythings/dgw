@@ -1054,6 +1054,7 @@ namespace dgw
             Controls.Add(tableLayoutPanel4);
             Controls.Add(panel1);
             Name = "MainForm";
+            Text = "dgw";
             Load += MainForm_Load;
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
