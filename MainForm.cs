@@ -1,4 +1,4 @@
-using LiveChartsCore;
+﻿using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using System.Diagnostics;
 using Tomlyn;
@@ -16,10 +16,17 @@ namespace dgw {
 
     public partial class MainForm : Form {
 
+
+        private static bool is_loaded_once = false;
+        private Point last_location { get; set; }
+
         private System.Windows.Forms.Timer timer;
 
         private string config_path = "Config.toml";
         private string api_key;
+
+        // true = english, false = english
+        private static bool lang_flag = true;
 
         private static bool city_flag = true;
         private static bool play_flag = false;
@@ -49,15 +56,23 @@ namespace dgw {
 
         public MainForm() {
 
+
             InitializeComponent();
 
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
+
+
+
+            if (lang_flag) {
+
+            } else {
+
+            }
         }
 
         private void MainForm_Load(object sender, EventArgs e) {
-
 
             cartesianChart1.ZoomMode = LiveChartsCore.Measure.ZoomAndPanMode.X;
 
@@ -69,19 +84,65 @@ namespace dgw {
             string[] cities = { "Amasya", "Ankara", "Istanbul" };
 
             foreach (string city in cities) {
-                comboBox1.Items.Add(city);
+                comboBoxCity.Items.Add(city);
             }
 
-            comboBox1.ForeColor = Color.Gray;
+            comboBoxCity.ForeColor = Color.Gray;
             this.Size = new Size(990, 595);
+
+            pictureBoxF1.Image = Image.FromFile($"./icons/usa.png");
+            pictureBoxF2.Image = Image.FromFile($"./icons/tr.png");
 
 
             // this is for the easter egg
             this.LocationChanged += MainForm_LocationChanged;
+            this.FormClosing += MainForm_FormClosing;
 
-            this.comboBox1.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            this.comboBox1.AutoCompleteSource = AutoCompleteSource.ListItems;
+            this.comboBoxCity.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            this.comboBoxCity.AutoCompleteSource = AutoCompleteSource.ListItems;
 
+            // center or get the last location
+            if (!is_loaded_once) {
+                Rectangle screen_bounds = Screen.PrimaryScreen.Bounds;
+
+                this.last_location = new Point(
+                    (screen_bounds.Width - this.Width) / 2,
+                    (screen_bounds.Height - this.Height) / 2
+                );
+                is_loaded_once = true;
+            }
+            this.Location = this.last_location;
+
+            // language support
+            convert_lang();
+
+        }
+
+        private void convert_lang() {
+            if (!lang_flag) {
+                buttonBigger.Text = "Büyük Pencere";
+                buttonPlay.Text = "Oyna";
+                buttonRefresh.Text = "Yenile";
+                buttonRefreshO.Text = "Eski Veri Yenile";
+                buttonLoadO.Text = "Eski Veri Yükle";
+
+                labelPressure.Text = "Basınç:";
+                labelVisibility.Text = "Görünürlük:";
+                labelUVI.Text = "UV Endeksi:";
+                labelWind.Text = "Rüzgar Hızı:";
+                labelWindD.Text = "Rüzgar Açısı:";
+                labelHumidity.Text = "Nem Oranı:";
+
+                tabPagePrec.Text = "Yağış";
+                tabPageTemp.Text = "Sıcaklık";
+                tabPageWindD.Text = "Rüzgar Açısı";
+                tabPageWind.Text = "Rüzgar";
+                tabPageRain.Text = "Yağmur";
+                tabPageSnow.Text = "Kar";
+
+                comboBoxCity.Text = "Şehir";
+
+            }
         }
 
         private void MainForm_LocationChanged(object sender, EventArgs e) {
@@ -202,45 +263,73 @@ namespace dgw {
             return temp_list;
         }
 
-        public void reorder_daylist(string startDay) {
-            string[] originalDays = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
-            Dictionary<string, int> dayToIndex = new Dictionary<string, int>();
-            for (int i = 0; i < originalDays.Length; i++) {
-                dayToIndex[originalDays[i]] = i;
+        // this works even if the argument language is different
+        public void reorder_daylist(string start_day) {
+            string[] original_days = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+            string[] turkish_days = { "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar" };
+
+            string[] days = lang_flag ? original_days : turkish_days;
+
+            if (lang_flag == false) {
+                Dictionary<string, string> turkish_to_english = new Dictionary<string, string> {
+                    { "Pazartesi", "Monday" },
+                    { "Salı", "Tuesday" },
+                    { "Çarşamba", "Wednesday" },
+                    { "Perşembe", "Thursday" },
+                    { "Cuma", "Friday" },
+                    { "Cumartesi", "Saturday" },
+                    { "Pazar", "Sunday" }
+                };
+
+                if (turkish_to_english.ContainsKey(start_day)) {
+                    start_day = turkish_to_english[start_day];
+                } else {
+                    throw new ArgumentException("Invalid day string.");
+                }
             }
 
-            if (!dayToIndex.ContainsKey(startDay)) {
+            Dictionary<string, int> day_to_index = new Dictionary<string, int>();
+            for (int i = 0; i < days.Length; i++) {
+                day_to_index[days[i]] = i;
+            }
+
+            if (!day_to_index.ContainsKey(start_day)) {
                 throw new ArgumentException("Invalid day string.");
             }
 
-            int startDayIndex = dayToIndex[startDay];
+            int start_day_index = day_to_index[start_day];
             List<Label> labels = this.get_daylist();
 
-            if (labels.Count != originalDays.Length) {
+            if (labels.Count != days.Length) {
                 throw new InvalidOperationException("Day list size mismatch.");
             }
 
             for (int i = 0; i < labels.Count; i++) {
-                int reorderedIndex = (startDayIndex + i) % originalDays.Length;
-                labels[i].Text = originalDays[reorderedIndex];
+                int reordered_index = (start_day_index + i) % days.Length;
+                labels[i].Text = days[reordered_index];
             }
         }
 
+
         public void reorder_daylist() {
-            string[] originalDays = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+            string[] original_days = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
             int today_index = (int)DateTime.Now.DayOfWeek;
+
+            if (lang_flag == false) {
+                original_days = new string[] { "Pazartesi", "Salı", "Çarsamba", "Perşembe", "Cuma", "Cumartesi", "Pazar" };
+            }
 
             today_index = (today_index == 0) ? 6 : today_index - 1;
 
             List<Label> labels = this.get_daylist();
 
-            if (labels.Count != originalDays.Length) {
+            if (labels.Count != original_days.Length) {
                 throw new InvalidOperationException("Day list size mismatch.");
             }
 
             for (int i = 0; i < labels.Count; i++) {
-                int reorderedIndex = (today_index + i) % originalDays.Length;
-                labels[i].Text = originalDays[reorderedIndex];
+                int reordered_index = (today_index + i) % original_days.Length;
+                labels[i].Text = original_days[reordered_index];
             }
         }
 
@@ -272,7 +361,7 @@ namespace dgw {
                 {
                     Values = this.first_hourly_temps,
                     YToolTipLabelFormatter = point => {
-                        return $"{point.Coordinate.PrimaryValue} �C";
+                        return $"{point.Coordinate.PrimaryValue} °C";
                     }
                 },
             };
@@ -306,7 +395,7 @@ namespace dgw {
                 {
                     Values = this.first_hourly_wind_degs,
                     YToolTipLabelFormatter = point => {
-                        return $"{point.Coordinate.PrimaryValue}� / {degrees_to_direction(point.Coordinate.PrimaryValue)}";
+                        return $"{point.Coordinate.PrimaryValue}° / {degrees_to_direction(point.Coordinate.PrimaryValue)}";
                     }
                 },
             };
@@ -373,7 +462,7 @@ namespace dgw {
             cartesianChart1.Series = new ISeries[] {
                 new LineSeries<int> {
                     Values = temperatures,
-                    YToolTipLabelFormatter = point => $"{point.Coordinate.PrimaryValue} �C"
+                    YToolTipLabelFormatter = point => $"{point.Coordinate.PrimaryValue} °C"
                 }
             };
 
@@ -392,7 +481,7 @@ namespace dgw {
                 new ColumnSeries<int> {
                     Values = wind_degrees,
                     YToolTipLabelFormatter = point => {
-                        return $"{point.Coordinate.PrimaryValue}� / {degrees_to_direction(point.Coordinate.PrimaryValue)}";
+                        return $"{point.Coordinate.PrimaryValue}° / {degrees_to_direction(point.Coordinate.PrimaryValue)}";
                     }
                 }
             };
@@ -559,7 +648,11 @@ namespace dgw {
             Debug.WriteLine($"Selected City: {selected_city} -- Selected Date: {selected_date} -- Selected Time: {selected_time}");
 
             if (selected_city == null || selected_date == null || selected_time == null) {
-                MessageBox.Show("Please select a city, date, and time.");
+                if (lang_flag) {
+                    MessageBox.Show("Please select a valid city, date, and time.");
+                } else {
+                    MessageBox.Show("Lütfen geçerli şehir, tarih ve zaman seçiniz.");
+                }
                 return;
             }
 
@@ -615,26 +708,47 @@ namespace dgw {
                     weather = JsonSerializer.Deserialize<WeatherResponse>(file_contents);
                     city = comboBoxOCity.Text;
 
-                    richTextBox1.Text = $"Name: {city}\nLatitude: {weather.lat}\nLongitude: {weather.lon}\n\n";
+                    if (lang_flag) {
+                        richTextBox1.Text = $"Name: {city}\nLatitude: {weather.lat}\nLongitude: {weather.lon}\n\n";
+                    } else {
+                        richTextBox1.Text = $"Ad: {city}\nEnlem: {weather.lat}\nBoylam: {weather.lon}\n\n";
+                    }
                 } else {
-                    richTextBox1.Text = "No saved weather data found in the specified file.";
+                    if (lang_flag) {
+                        richTextBox1.Text = "No saved weather data found in the specified file.";
+                    } else {
+                        richTextBox1.Text = "Belirtilen dosya için hava verisi bulunamadı.";
+                    }
                     return 0;
                 }
             } else {
-                city = comboBox1.Text;
+                city = comboBoxCity.Text;
                 string geoUrl = $"http://api.openweathermap.org/geo/1.0/direct?q={city}&limit={limit}&appid={api_key}";
                 GeoLocationClient geolocationClient = new GeoLocationClient();
                 GeoLocation location = await geolocationClient.get_geolocation(geoUrl);
 
                 if (location == null) {
-                    richTextBox1.Text = "No geolocation data found.";
+                    if (lang_flag) {
+                        richTextBox1.Text = "No geolocation data found.";
+                        MessageBox.Show("No city was found");
+                    } else {
+                        richTextBox1.Text = "Geolokasyon verisi bulunamadı.";
+                        MessageBox.Show("Şehir bulunamadı.");
+                    }
                     return 0;
                 }
 
-                richTextBox1.Text = $"Name: {location.name}\nLatitude: {location.lat:F4}\nLongitude: {location.lon:F4}\n\n";
+                if (lang_flag) {
+                    richTextBox1.Text = $"Name: {location.name}\nLatitude: {location.lat:F4}\nLongitude: {location.lon:F4}\n\n";
+                } else {
+                    richTextBox1.Text = $"Ad: {location.name}\nEnlem: {location.lat:F4}\nBoylam: {location.lon:F4}\n\n";
+                }
 
-                string weatherUrl = $"https://api.openweathermap.org/data/3.0/onecall?lat={location.lat}&lon={location.lon}&appid={api_key}&units=metric";
-                weather = await weather_client.get_weather_async(weatherUrl);
+                string weather_url = $"https://api.openweathermap.org/data/3.0/onecall?lat={location.lat}&lon={location.lon}&appid={api_key}&units=metric";
+                if (!lang_flag) {
+                    weather_url = $"https://api.openweathermap.org/data/3.0/onecall?lat={location.lat}&lon={location.lon}&lang=tr&appid={api_key}&units=metric";
+                }
+                weather = await weather_client.get_weather_async(weather_url);
 
                 if (weather != null) {
                     DateTime creation_time = DateTime.Now;
@@ -674,7 +788,11 @@ namespace dgw {
                         }
                     }
                 } else {
-                    richTextBox1.AppendText("No active alerts.\n");
+                    if (lang_flag) {
+                        richTextBox1.AppendText("No active alerts.\n");
+                    } else {
+                        richTextBox1.AppendText("Aktif uyarı bulunamadı.\n");
+                    }
                 }
 
                 pictureBox1.BackColor = Color.Turquoise;
@@ -690,8 +808,8 @@ namespace dgw {
                 await this.draw_graphs();
 
                 //richTextBox1.AppendText($"\n\nWeather Information:\n");
-                //richTextBox1.AppendText($"Temperature: {weather.current.temp}�C\n");
-                //richTextBox1.AppendText($"Feels Like: {weather.current.feelsLike}�C\n");
+                //richTextBox1.AppendText($"Temperature: {weather.current.temp}°C\n");
+                //richTextBox1.AppendText($"Feels Like: {weather.current.feelsLike}°C\n");
                 //richTextBox1.AppendText($"Humidity: {weather.current.humidity}%\n");
                 //richTextBox1.AppendText($"Weather: {weather.current.weather[0].description}");
 
@@ -703,17 +821,17 @@ namespace dgw {
                 //if (weather.current.rain.oneHour != null) {
                 //    label18.Text = $"Precipitation: {weather.current.rain.oneHour}";
 
-                label19.Text = $"Humidity: {weather.current.humidity}%";
-                label21.Text = $"Wind: {weather.current.wind_speed} m/s";
-                label22.Text = $"Wind Degree: {weather.current.wind_deg}� / {wind_deg_string}";
-                label23.Text = $"Pressure: {weather.current.pressure} hPa";
-                label20.Text = $"Visibility: {weather.current.visibility / 1000} km";
-                label2.Text = $"UV Index: {weather.current.uvi}";
+                labelHumidity.Text += $" {weather.current.humidity}%";
+                labelWind.Text += $" {weather.current.wind_speed} m/s";
+                labelWindD.Text += $" {weather.current.wind_deg}° / {wind_deg_string}";
+                labelPressure.Text += $" {weather.current.pressure} hPa";
+                labelVisibility.Text += $" {weather.current.visibility / 1000} km";
+                labelUVI.Text += $" {weather.current.uvi}";
 
                 // this changes the temp values
                 int index = 0;
                 foreach (var (min, max) in minmax_temps) {
-                    temp_labels[index].Text = $"{((int)min)} �C / {((int)max)}�C";
+                    temp_labels[index].Text = $"{((int)min)} °C / {((int)max)}°C";
                     index++;
                     if (temp_labels.Count == index) break;
                 }
@@ -772,8 +890,8 @@ namespace dgw {
         private void comboBox1_Click(object sender, EventArgs e) {
 
             if (city_flag) {
-                comboBox1.ForeColor = Color.Black;
-                comboBox1.Text = string.Empty;
+                comboBoxCity.ForeColor = Color.Black;
+                comboBoxCity.Text = string.Empty;
                 city_flag = false;
             }
 
@@ -817,7 +935,12 @@ namespace dgw {
 
                 this.Size = new Size(1200, 595);
                 play_flag = true;
-                this.buttonPlay.Text = "Stop";
+
+                if (lang_flag) {
+                    this.buttonPlay.Text = "Stop";
+                } else {
+                    this.buttonPlay.Text = "Durdur";
+                }
                 this.panelPlay.Controls.Clear();
                 this.panelPlay.BackColor = Color.White;
 
@@ -850,7 +973,11 @@ namespace dgw {
                 this.panelPlay.Controls.Clear();
                 this.panelPlay.BackColor = Color.White;
                 play_flag = false;
-                this.buttonPlay.Text = "Play";
+                if (lang_flag) {
+                    this.buttonPlay.Text = "Play";
+                } else {
+                    this.buttonPlay.Text = "Oyna";
+                }
             }
         }
 
@@ -861,7 +988,11 @@ namespace dgw {
 
                 this.Size = new Size(1200, 595);
                 play_flag = true;
-                this.buttonPlay.Text = "Stop";
+                if (lang_flag) {
+                    this.buttonPlay.Text = "Stop";
+                } else {
+                    this.buttonPlay.Text = "Durdur";
+                }
 
                 this.panelPlay.Controls.Clear();
                 this.panelPlay.BackColor = Color.White;
@@ -881,7 +1012,11 @@ namespace dgw {
                 this.panelPlay.Controls.Clear();
                 this.panelPlay.BackColor = Color.White;
                 play_flag = false;
-                this.buttonPlay.Text = "Play";
+                if (lang_flag) {
+                    this.buttonPlay.Text = "Play";
+                } else {
+                    this.buttonPlay.Text = "Oyna";
+                }
             }
         }
 
@@ -891,7 +1026,11 @@ namespace dgw {
 
                 this.Size = new Size(1200, 595);
                 play_flag = true;
-                this.buttonPlay.Text = "Stop";
+                if (lang_flag) {
+                    this.buttonPlay.Text = "Stop";
+                } else {
+                    this.buttonPlay.Text = "Durdur";
+                }
 
                 this.panelPlay.Controls.Clear();
                 this.panelPlay.BackColor = Color.Black;
@@ -912,7 +1051,11 @@ namespace dgw {
                 this.panelPlay.Controls.Clear();
                 this.panelPlay.BackColor = Color.White;
                 play_flag = false;
-                this.buttonPlay.Text = "Play";
+                if (lang_flag) {
+                    this.buttonPlay.Text = "Play";
+                } else {
+                    this.buttonPlay.Text = "Oyna";
+                }
             }
         }
 
@@ -921,7 +1064,11 @@ namespace dgw {
 
                 this.Size = new Size(990, 900);
                 alert_flag = true;
-                this.buttonBigger.Text = "Smaller Window";
+                if (lang_flag) {
+                    this.buttonBigger.Text = "Smaller Window";
+                } else {
+                    this.buttonBigger.Text = "Küçük Pencere";
+                }
 
                 richTextBox2.Text = richTextBox1.Text;
 
@@ -929,8 +1076,41 @@ namespace dgw {
 
                 this.Size = new Size(990, 595);
                 alert_flag = false;
-                this.buttonBigger.Text = "Bigger Window";
+                if (lang_flag) {
+                    this.buttonBigger.Text = "Bigger Window";
+                } else {
+                    this.buttonBigger.Text = "Büyük Pencere";
+                }
             }
+        }
+
+        private void pictureBoxF1_Click(object sender, EventArgs e) {
+            if (!lang_flag) {
+                lang_flag = true;
+                reload_form();
+            }
+        }
+
+        private void pictureBoxF2_Click(object sender, EventArgs e) {
+            if (lang_flag) {
+                lang_flag = false;
+                reload_form();
+            }
+        }
+
+        private void reload_form() {
+
+            MainForm new_form = new MainForm {
+                last_location = this.Location
+            };
+
+            new_form.Show(); 
+            this.Hide();
+
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
+                Application.Exit();
         }
     }
 }

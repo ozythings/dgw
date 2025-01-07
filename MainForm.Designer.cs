@@ -32,14 +32,17 @@ namespace dgw
         private void InitializeComponent() {
             components = new System.ComponentModel.Container();
             panel1 = new Panel();
+            tableLayoutPanel7 = new TableLayoutPanel();
+            pictureBoxF1 = new PictureBox();
+            pictureBoxF2 = new PictureBox();
             label1 = new Label();
             tableLayoutPanel3 = new TableLayoutPanel();
-            label2 = new Label();
-            label21 = new Label();
-            label22 = new Label();
-            label23 = new Label();
-            label19 = new Label();
-            label20 = new Label();
+            labelUVI = new Label();
+            labelWind = new Label();
+            labelWindD = new Label();
+            labelPressure = new Label();
+            labelHumidity = new Label();
+            labelVisibility = new Label();
             tabControl1 = new TabControl();
             tabPageTemp = new TabPage();
             cartesianChart1 = new LiveChartsCore.SkiaSharpView.WinForms.CartesianChart();
@@ -49,7 +52,7 @@ namespace dgw
             cartesianChart4 = new LiveChartsCore.SkiaSharpView.WinForms.CartesianChart();
             tabPageSnow = new TabPage();
             cartesianChart5 = new LiveChartsCore.SkiaSharpView.WinForms.CartesianChart();
-            tabPageWindS = new TabPage();
+            tabPageWind = new TabPage();
             cartesianChart2 = new LiveChartsCore.SkiaSharpView.WinForms.CartesianChart();
             tabPageWindD = new TabPage();
             cartesianChart3 = new LiveChartsCore.SkiaSharpView.WinForms.CartesianChart();
@@ -86,15 +89,15 @@ namespace dgw
             label8 = new Label();
             richTextBox1 = new RichTextBox();
             buttonBigger = new Button();
-            get_data_button = new Button();
+            buttonRefreshO = new Button();
             comboBoxOTime = new ComboBox();
             comboBoxOCity = new ComboBox();
             comboBoxODate = new ComboBox();
-            comboBox1 = new ComboBox();
-            refresh_button = new Button();
+            comboBoxCity = new ComboBox();
+            buttonRefresh = new Button();
             progressBar2 = new ProgressBar();
             errorProvider1 = new ErrorProvider(components);
-            old_refresh_button = new Button();
+            buttonLoadO = new Button();
             buttonPlay = new Button();
             panelPlay = new Panel();
             tableLayoutPanel5 = new TableLayoutPanel();
@@ -102,6 +105,9 @@ namespace dgw
             panel2 = new Panel();
             richTextBox2 = new RichTextBox();
             panel1.SuspendLayout();
+            tableLayoutPanel7.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxF1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxF2).BeginInit();
             tableLayoutPanel3.SuspendLayout();
             tabControl1.SuspendLayout();
             tabPageTemp.SuspendLayout();
@@ -109,7 +115,7 @@ namespace dgw
             tabControl2.SuspendLayout();
             tabPageRain.SuspendLayout();
             tabPageSnow.SuspendLayout();
-            tabPageWindS.SuspendLayout();
+            tabPageWind.SuspendLayout();
             tabPageWindD.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
@@ -131,6 +137,7 @@ namespace dgw
             // panel1
             // 
             panel1.BackColor = Color.White;
+            panel1.Controls.Add(tableLayoutPanel7);
             panel1.Controls.Add(label1);
             panel1.Controls.Add(tableLayoutPanel3);
             panel1.Controls.Add(tabControl1);
@@ -142,6 +149,42 @@ namespace dgw
             panel1.Name = "panel1";
             panel1.Size = new Size(802, 542);
             panel1.TabIndex = 1;
+            // 
+            // tableLayoutPanel7
+            // 
+            tableLayoutPanel7.ColumnCount = 2;
+            tableLayoutPanel7.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel7.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel7.Controls.Add(pictureBoxF1, 0, 0);
+            tableLayoutPanel7.Controls.Add(pictureBoxF2, 1, 0);
+            tableLayoutPanel7.Location = new Point(241, 14);
+            tableLayoutPanel7.Name = "tableLayoutPanel7";
+            tableLayoutPanel7.RowCount = 1;
+            tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel7.Size = new Size(75, 28);
+            tableLayoutPanel7.TabIndex = 50;
+            // 
+            // pictureBoxF1
+            // 
+            pictureBoxF1.Anchor = AnchorStyles.Top;
+            pictureBoxF1.Location = new Point(3, 3);
+            pictureBoxF1.Name = "pictureBoxF1";
+            pictureBoxF1.Size = new Size(30, 20);
+            pictureBoxF1.SizeMode = PictureBoxSizeMode.StretchImage;
+            pictureBoxF1.TabIndex = 48;
+            pictureBoxF1.TabStop = false;
+            pictureBoxF1.Click += pictureBoxF1_Click;
+            // 
+            // pictureBoxF2
+            // 
+            pictureBoxF2.Anchor = AnchorStyles.Top;
+            pictureBoxF2.Location = new Point(41, 3);
+            pictureBoxF2.Name = "pictureBoxF2";
+            pictureBoxF2.Size = new Size(30, 20);
+            pictureBoxF2.SizeMode = PictureBoxSizeMode.StretchImage;
+            pictureBoxF2.TabIndex = 49;
+            pictureBoxF2.TabStop = false;
+            pictureBoxF2.Click += pictureBoxF2_Click;
             // 
             // label1
             // 
@@ -157,104 +200,104 @@ namespace dgw
             tableLayoutPanel3.ColumnCount = 2;
             tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 45.4545441F));
             tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 54.5454559F));
-            tableLayoutPanel3.Controls.Add(label2, 0, 2);
-            tableLayoutPanel3.Controls.Add(label21, 1, 0);
-            tableLayoutPanel3.Controls.Add(label22, 1, 1);
-            tableLayoutPanel3.Controls.Add(label23, 0, 0);
-            tableLayoutPanel3.Controls.Add(label19, 1, 2);
-            tableLayoutPanel3.Controls.Add(label20, 0, 1);
-            tableLayoutPanel3.Location = new Point(322, 9);
+            tableLayoutPanel3.Controls.Add(labelUVI, 0, 2);
+            tableLayoutPanel3.Controls.Add(labelWind, 1, 0);
+            tableLayoutPanel3.Controls.Add(labelWindD, 1, 1);
+            tableLayoutPanel3.Controls.Add(labelPressure, 0, 0);
+            tableLayoutPanel3.Controls.Add(labelHumidity, 1, 2);
+            tableLayoutPanel3.Controls.Add(labelVisibility, 0, 1);
+            tableLayoutPanel3.Location = new Point(358, 9);
             tableLayoutPanel3.Name = "tableLayoutPanel3";
             tableLayoutPanel3.RowCount = 3;
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
-            tableLayoutPanel3.Size = new Size(473, 100);
+            tableLayoutPanel3.Size = new Size(437, 100);
             tableLayoutPanel3.TabIndex = 44;
             // 
-            // label2
+            // labelUVI
             // 
-            label2.Anchor = AnchorStyles.Left;
-            label2.AutoSize = true;
-            label2.Font = new Font("Segoe UI", 12F);
-            label2.Location = new Point(3, 74);
-            label2.Margin = new Padding(3, 3, 3, 0);
-            label2.Name = "label2";
-            label2.Size = new Size(75, 21);
-            label2.TabIndex = 39;
-            label2.Text = "UV Index:";
-            label2.TextAlign = ContentAlignment.MiddleCenter;
+            labelUVI.Anchor = AnchorStyles.Left;
+            labelUVI.AutoSize = true;
+            labelUVI.Font = new Font("Segoe UI", 12F);
+            labelUVI.Location = new Point(3, 74);
+            labelUVI.Margin = new Padding(3, 3, 3, 0);
+            labelUVI.Name = "labelUVI";
+            labelUVI.Size = new Size(75, 21);
+            labelUVI.TabIndex = 39;
+            labelUVI.Text = "UV Index:";
+            labelUVI.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // label21
+            // labelWind
             // 
-            label21.Anchor = AnchorStyles.Left;
-            label21.AutoSize = true;
-            label21.Font = new Font("Segoe UI", 12F);
-            label21.Location = new Point(218, 7);
-            label21.Margin = new Padding(3, 3, 3, 0);
-            label21.Name = "label21";
-            label21.Size = new Size(50, 21);
-            label21.TabIndex = 36;
-            label21.Text = "Wind:";
-            label21.TextAlign = ContentAlignment.MiddleCenter;
+            labelWind.Anchor = AnchorStyles.Left;
+            labelWind.AutoSize = true;
+            labelWind.Font = new Font("Segoe UI", 12F);
+            labelWind.Location = new Point(201, 7);
+            labelWind.Margin = new Padding(3, 3, 3, 0);
+            labelWind.Name = "labelWind";
+            labelWind.Size = new Size(97, 21);
+            labelWind.TabIndex = 36;
+            labelWind.Text = "Wind Speed:";
+            labelWind.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // label22
+            // labelWindD
             // 
-            label22.Anchor = AnchorStyles.Left;
-            label22.AutoSize = true;
-            label22.Font = new Font("Segoe UI", 12F);
-            label22.Location = new Point(218, 40);
-            label22.Margin = new Padding(3, 3, 3, 0);
-            label22.Name = "label22";
-            label22.Size = new Size(104, 21);
-            label22.TabIndex = 37;
-            label22.Text = "Wind Degree:";
-            label22.TextAlign = ContentAlignment.MiddleCenter;
+            labelWindD.Anchor = AnchorStyles.Left;
+            labelWindD.AutoSize = true;
+            labelWindD.Font = new Font("Segoe UI", 12F);
+            labelWindD.Location = new Point(201, 40);
+            labelWindD.Margin = new Padding(3, 3, 3, 0);
+            labelWindD.Name = "labelWindD";
+            labelWindD.Size = new Size(104, 21);
+            labelWindD.TabIndex = 37;
+            labelWindD.Text = "Wind Degree:";
+            labelWindD.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // label23
+            // labelPressure
             // 
-            label23.Anchor = AnchorStyles.Left;
-            label23.AutoSize = true;
-            label23.Font = new Font("Segoe UI", 12F);
-            label23.Location = new Point(3, 7);
-            label23.Margin = new Padding(3, 3, 3, 0);
-            label23.Name = "label23";
-            label23.Size = new Size(73, 21);
-            label23.TabIndex = 38;
-            label23.Text = "Pressure:";
-            label23.TextAlign = ContentAlignment.MiddleCenter;
+            labelPressure.Anchor = AnchorStyles.Left;
+            labelPressure.AutoSize = true;
+            labelPressure.Font = new Font("Segoe UI", 12F);
+            labelPressure.Location = new Point(3, 7);
+            labelPressure.Margin = new Padding(3, 3, 3, 0);
+            labelPressure.Name = "labelPressure";
+            labelPressure.Size = new Size(73, 21);
+            labelPressure.TabIndex = 38;
+            labelPressure.Text = "Pressure:";
+            labelPressure.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // label19
+            // labelHumidity
             // 
-            label19.Anchor = AnchorStyles.Left;
-            label19.AutoSize = true;
-            label19.Font = new Font("Segoe UI", 12F);
-            label19.Location = new Point(218, 74);
-            label19.Margin = new Padding(3, 3, 3, 0);
-            label19.Name = "label19";
-            label19.Size = new Size(77, 21);
-            label19.TabIndex = 35;
-            label19.Text = "Humidity:";
-            label19.TextAlign = ContentAlignment.MiddleCenter;
+            labelHumidity.Anchor = AnchorStyles.Left;
+            labelHumidity.AutoSize = true;
+            labelHumidity.Font = new Font("Segoe UI", 12F);
+            labelHumidity.Location = new Point(201, 74);
+            labelHumidity.Margin = new Padding(3, 3, 3, 0);
+            labelHumidity.Name = "labelHumidity";
+            labelHumidity.Size = new Size(77, 21);
+            labelHumidity.TabIndex = 35;
+            labelHumidity.Text = "Humidity:";
+            labelHumidity.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // label20
+            // labelVisibility
             // 
-            label20.Anchor = AnchorStyles.Left;
-            label20.AutoSize = true;
-            label20.Font = new Font("Segoe UI", 12F);
-            label20.Location = new Point(3, 40);
-            label20.Margin = new Padding(3, 3, 3, 0);
-            label20.Name = "label20";
-            label20.Size = new Size(72, 21);
-            label20.TabIndex = 34;
-            label20.Text = "Visibility:";
-            label20.TextAlign = ContentAlignment.MiddleCenter;
+            labelVisibility.Anchor = AnchorStyles.Left;
+            labelVisibility.AutoSize = true;
+            labelVisibility.Font = new Font("Segoe UI", 12F);
+            labelVisibility.Location = new Point(3, 40);
+            labelVisibility.Margin = new Padding(3, 3, 3, 0);
+            labelVisibility.Name = "labelVisibility";
+            labelVisibility.Size = new Size(72, 21);
+            labelVisibility.TabIndex = 34;
+            labelVisibility.Text = "Visibility:";
+            labelVisibility.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // tabControl1
             // 
             tabControl1.Controls.Add(tabPageTemp);
             tabControl1.Controls.Add(tabPagePrec);
-            tabControl1.Controls.Add(tabPageWindS);
+            tabControl1.Controls.Add(tabPageWind);
             tabControl1.Controls.Add(tabPageWindD);
             tabControl1.Font = new Font("Arial", 12F);
             tabControl1.ItemSize = new Size(412, 24);
@@ -347,15 +390,15 @@ namespace dgw
             cartesianChart5.Size = new Size(780, 211);
             cartesianChart5.TabIndex = 40;
             // 
-            // tabPageWindS
+            // tabPageWind
             // 
-            tabPageWindS.Controls.Add(cartesianChart2);
-            tabPageWindS.Location = new Point(4, 28);
-            tabPageWindS.Name = "tabPageWindS";
-            tabPageWindS.Size = new Size(788, 240);
-            tabPageWindS.TabIndex = 2;
-            tabPageWindS.Text = "Wind Speed";
-            tabPageWindS.UseVisualStyleBackColor = true;
+            tabPageWind.Controls.Add(cartesianChart2);
+            tabPageWind.Location = new Point(4, 28);
+            tabPageWind.Name = "tabPageWind";
+            tabPageWind.Size = new Size(788, 240);
+            tabPageWind.TabIndex = 2;
+            tabPageWind.Text = "Wind Speed";
+            tabPageWind.UseVisualStyleBackColor = true;
             // 
             // cartesianChart2
             // 
@@ -830,17 +873,17 @@ namespace dgw
             buttonBigger.UseVisualStyleBackColor = true;
             buttonBigger.Click += buttonBigger_Click;
             // 
-            // get_data_button
+            // buttonRefreshO
             // 
-            get_data_button.Dock = DockStyle.Fill;
-            get_data_button.Font = new Font("Segoe UI", 9F);
-            get_data_button.Location = new Point(3, 90);
-            get_data_button.Name = "get_data_button";
-            get_data_button.Size = new Size(131, 23);
-            get_data_button.TabIndex = 42;
-            get_data_button.Text = "Get Old Data";
-            get_data_button.UseVisualStyleBackColor = true;
-            get_data_button.Click += get_data_button_Click;
+            buttonRefreshO.Dock = DockStyle.Fill;
+            buttonRefreshO.Font = new Font("Segoe UI", 9F);
+            buttonRefreshO.Location = new Point(3, 90);
+            buttonRefreshO.Name = "buttonRefreshO";
+            buttonRefreshO.Size = new Size(131, 23);
+            buttonRefreshO.TabIndex = 42;
+            buttonRefreshO.Text = "Get Old Data";
+            buttonRefreshO.UseVisualStyleBackColor = true;
+            buttonRefreshO.Click += get_data_button_Click;
             // 
             // comboBoxOTime
             // 
@@ -872,29 +915,29 @@ namespace dgw
             comboBoxODate.Size = new Size(131, 23);
             comboBoxODate.TabIndex = 5;
             // 
-            // comboBox1
+            // comboBoxCity
             // 
-            comboBox1.Dock = DockStyle.Fill;
-            comboBox1.Font = new Font("Segoe UI", 9F);
-            comboBox1.FormattingEnabled = true;
-            comboBox1.Location = new Point(3, 30);
-            comboBox1.Name = "comboBox1";
-            comboBox1.Size = new Size(131, 23);
-            comboBox1.TabIndex = 2;
-            comboBox1.Text = "City";
-            comboBox1.Click += comboBox1_Click;
+            comboBoxCity.Dock = DockStyle.Fill;
+            comboBoxCity.Font = new Font("Segoe UI", 9F);
+            comboBoxCity.FormattingEnabled = true;
+            comboBoxCity.Location = new Point(3, 30);
+            comboBoxCity.Name = "comboBoxCity";
+            comboBoxCity.Size = new Size(131, 23);
+            comboBoxCity.TabIndex = 2;
+            comboBoxCity.Text = "City";
+            comboBoxCity.Click += comboBox1_Click;
             // 
-            // refresh_button
+            // buttonRefresh
             // 
-            refresh_button.Dock = DockStyle.Fill;
-            refresh_button.Font = new Font("Segoe UI", 9F);
-            refresh_button.Location = new Point(3, 57);
-            refresh_button.Name = "refresh_button";
-            refresh_button.Size = new Size(131, 22);
-            refresh_button.TabIndex = 0;
-            refresh_button.Text = "Refresh";
-            refresh_button.UseVisualStyleBackColor = true;
-            refresh_button.Click += refresh_button_Click;
+            buttonRefresh.Dock = DockStyle.Fill;
+            buttonRefresh.Font = new Font("Segoe UI", 9F);
+            buttonRefresh.Location = new Point(3, 57);
+            buttonRefresh.Name = "buttonRefresh";
+            buttonRefresh.Size = new Size(131, 22);
+            buttonRefresh.TabIndex = 0;
+            buttonRefresh.Text = "Refresh";
+            buttonRefresh.UseVisualStyleBackColor = true;
+            buttonRefresh.Click += refresh_button_Click;
             // 
             // progressBar2
             // 
@@ -908,17 +951,17 @@ namespace dgw
             // 
             errorProvider1.ContainerControl = this;
             // 
-            // old_refresh_button
+            // buttonLoadO
             // 
-            old_refresh_button.Dock = DockStyle.Fill;
-            old_refresh_button.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            old_refresh_button.Location = new Point(3, 119);
-            old_refresh_button.Name = "old_refresh_button";
-            old_refresh_button.Size = new Size(131, 26);
-            old_refresh_button.TabIndex = 43;
-            old_refresh_button.Text = "Load Old Data";
-            old_refresh_button.UseVisualStyleBackColor = true;
-            old_refresh_button.Click += old_refresh_button_Click;
+            buttonLoadO.Dock = DockStyle.Fill;
+            buttonLoadO.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            buttonLoadO.Location = new Point(3, 119);
+            buttonLoadO.Name = "buttonLoadO";
+            buttonLoadO.Size = new Size(131, 26);
+            buttonLoadO.TabIndex = 43;
+            buttonLoadO.Text = "Load Old Data";
+            buttonLoadO.UseVisualStyleBackColor = true;
+            buttonLoadO.Click += old_refresh_button_Click;
             // 
             // buttonPlay
             // 
@@ -942,9 +985,9 @@ namespace dgw
             // 
             tableLayoutPanel5.ColumnCount = 1;
             tableLayoutPanel5.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tableLayoutPanel5.Controls.Add(old_refresh_button, 0, 4);
+            tableLayoutPanel5.Controls.Add(buttonLoadO, 0, 4);
             tableLayoutPanel5.Controls.Add(comboBoxOCity, 0, 0);
-            tableLayoutPanel5.Controls.Add(get_data_button, 0, 3);
+            tableLayoutPanel5.Controls.Add(buttonRefreshO, 0, 3);
             tableLayoutPanel5.Controls.Add(comboBoxOTime, 0, 2);
             tableLayoutPanel5.Controls.Add(comboBoxODate, 0, 1);
             tableLayoutPanel5.Location = new Point(821, 2);
@@ -964,8 +1007,8 @@ namespace dgw
             tableLayoutPanel6.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tableLayoutPanel6.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 20F));
             tableLayoutPanel6.Controls.Add(progressBar2, 0, 0);
-            tableLayoutPanel6.Controls.Add(comboBox1, 0, 1);
-            tableLayoutPanel6.Controls.Add(refresh_button, 0, 2);
+            tableLayoutPanel6.Controls.Add(comboBoxCity, 0, 1);
+            tableLayoutPanel6.Controls.Add(buttonRefresh, 0, 2);
             tableLayoutPanel6.Font = new Font("JetBrains Mono NL", 9F);
             tableLayoutPanel6.Location = new Point(821, 462);
             tableLayoutPanel6.Name = "tableLayoutPanel6";
@@ -1011,10 +1054,12 @@ namespace dgw
             Controls.Add(tableLayoutPanel4);
             Controls.Add(panel1);
             Name = "MainForm";
-            Text = "dgw";
             Load += MainForm_Load;
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
+            tableLayoutPanel7.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)pictureBoxF1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxF2).EndInit();
             tableLayoutPanel3.ResumeLayout(false);
             tableLayoutPanel3.PerformLayout();
             tabControl1.ResumeLayout(false);
@@ -1023,7 +1068,7 @@ namespace dgw
             tabControl2.ResumeLayout(false);
             tabPageRain.ResumeLayout(false);
             tabPageSnow.ResumeLayout(false);
-            tabPageWindS.ResumeLayout(false);
+            tabPageWind.ResumeLayout(false);
             tabPageWindD.ResumeLayout(false);
             tableLayoutPanel2.ResumeLayout(false);
             tableLayoutPanel2.PerformLayout();
@@ -1048,8 +1093,8 @@ namespace dgw
 
         #endregion
         private Panel panel1;
-        private Button refresh_button;
-        private ComboBox comboBox1;
+        private Button buttonRefresh;
+        private ComboBox comboBoxCity;
         private ComboBox comboBoxOTime;
         private RichTextBox richTextBox1;
         private Label label_day3;
@@ -1078,26 +1123,26 @@ namespace dgw
         private Label label10;
         private Label label16;
         private PictureBox pictureBox8;
-        private Label label19;
-        private Label label20;
-        private Label label23;
-        private Label label22;
-        private Label label21;
+        private Label labelHumidity;
+        private Label labelVisibility;
+        private Label labelPressure;
+        private Label labelWindD;
+        private Label labelWind;
         private ProgressBar progressBar2;
         private TableLayoutPanel tableLayoutPanel1;
         private Label label17;
         private TableLayoutPanel tableLayoutPanel2;
-        private Button get_data_button;
+        private Button buttonRefreshO;
         private TabControl tabControl1;
         private TabPage tabPageTemp;
         private LiveChartsCore.SkiaSharpView.WinForms.CartesianChart cartesianChart1;
-        private TabPage tabPageWindS;
+        private TabPage tabPageWind;
         private TabPage tabPageWindD;
         private LiveChartsCore.SkiaSharpView.WinForms.CartesianChart cartesianChart2;
         private LiveChartsCore.SkiaSharpView.WinForms.CartesianChart cartesianChart3;
         private TableLayoutPanel tableLayoutPanel3;
         private ErrorProvider errorProvider1;
-        private Button old_refresh_button;
+        private Button buttonLoadO;
         private TabPage tabPagePrec;
         private LiveChartsCore.SkiaSharpView.WinForms.CartesianChart cartesianChart4;
         private Label label1;
@@ -1110,12 +1155,15 @@ namespace dgw
         private Panel panelPlay;
         private Button button2;
         private Button button1;
-        private Label label2;
+        private Label labelUVI;
         private Button button3;
         private TableLayoutPanel tableLayoutPanel5;
         private TableLayoutPanel tableLayoutPanel6;
         private Panel panel2;
         private Button buttonBigger;
         private RichTextBox richTextBox2;
+        private PictureBox pictureBoxF2;
+        private PictureBox pictureBoxF1;
+        private TableLayoutPanel tableLayoutPanel7;
     }
 }

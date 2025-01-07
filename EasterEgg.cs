@@ -48,7 +48,7 @@ namespace EasterEgg {
                 player.Stop();
                 main_form.Location = this.Location;
                 main_form.Show(); // show MainForm when exiting
-                Close();
+                this.Hide();
             };
             Controls.Add(exit_button);
 
@@ -137,10 +137,17 @@ namespace EasterEgg {
         }
 
         private void FormEE_Load(object sender, EventArgs e) {
+
+            this.FormClosing += FormEE_Closing;
+
             pictureBox1.Visible = true;
             is_bouncing = true;
             player.Play();
             main_form.Hide(); // hide MainForm when FormEE loads
+        }
+
+        private void FormEE_Closing(object? sender, FormClosingEventArgs e) {
+            Application.Exit();
         }
     }
 }
