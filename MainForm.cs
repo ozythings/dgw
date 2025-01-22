@@ -81,8 +81,19 @@ namespace dgw {
             load_old_data();
 
             this.reorder_daylist();
+            string[] cities = {
+                "Adana", "Adıyaman", "Afyonkarahisar", "Ağrı", "Aksaray", "Amasya", "Ankara", "Antalya", "Ardahan",
+                "Artvin", "Aydın", "Balıkesir", "Bartın", "Batman", "Bayburt", "Bilecik", "Bingöl", "Bitlis",
+                "Bolu", "Burdur", "Bursa", "Çanakkale", "Çankırı", "Çorum", "Denizli", "Diyarbakır", "Düzce",
+                "Edirne", "Elazığ", "Erzincan", "Erzurum", "Eskişehir", "Gaziantep", "Giresun", "Gümüşhane",
+                "Hakkâri", "Hatay", "Iğdır", "Isparta", "İstanbul", "İzmir", "Kahramanmaraş", "Karabük", "Karaman",
+                "Kars", "Kastamonu", "Kayseri", "Kırıkkale", "Kırklareli", "Kırşehir", "Kilis", "Kocaeli",
+                "Konya", "Kütahya", "Malatya", "Manisa", "Mardin", "Mersin", "Muğla", "Muş", "Nevşehir",
+                "Niğde", "Ordu", "Osmaniye", "Rize", "Sakarya", "Samsun", "Siirt", "Sinop", "Sivas",
+                "Şanlıurfa", "Şırnak", "Tekirdağ", "Tokat", "Trabzon", "Tunceli", "Uşak", "Van", "Yalova",
+                "Yozgat", "Zonguldak"
+            };
 
-            string[] cities = { "Amasya", "Ankara", "Istanbul" };
 
             foreach (string city in cities) {
                 comboBoxCity.Items.Add(city);
@@ -355,7 +366,7 @@ namespace dgw {
             }
         }
 
-        public string degrees_to_direction(double degrees, bool lang_flag = true) {
+        public string degrees_to_direction(double degrees) {
 
             // this is not needed because api already returns the degree lower than 360 : x < 360
             //degrees = degrees % 360;
@@ -792,7 +803,7 @@ namespace dgw {
                 if (weather != null) {
                     DateTime creation_time = DateTime.Now;
                     string metadata_path = $"./metadata.json";
-                    await weather_client.save_weather_to_json(weather, city, metadata_path, creation_time);
+                    await weather_client.save_weather_to_json(weather, location.name, metadata_path, creation_time);
                     Debug.WriteLine("Metadata saved to JSON.");
                 }
             }
@@ -911,6 +922,13 @@ namespace dgw {
 
                 var primary_temp = weather.current.temp;
                 var description = weather.current.weather[0].description;
+
+                //var summary_info = weather.daily
+                //    .Select(d => d.summary)
+                //    .FirstOrDefault();
+
+                //richTextBox1.AppendText($"Summary: {summary_info}\n");
+
                 pictureBox8.Image = Image.FromFile($"./icons/{primary_icon}.png");
                 label16.Text = ((int)primary_temp).ToString();
                 label1.Text = description;

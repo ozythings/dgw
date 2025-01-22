@@ -95,6 +95,7 @@ namespace Weather {
         public decimal? pop { get; set; }
         public decimal? rain { get; set; }
         public decimal? snow { get; set; }
+        //public string summary { get; set; }
         public List<WeatherCondition> weather { get; set; }
     }
 
