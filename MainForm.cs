@@ -50,6 +50,7 @@ namespace dgw {
         private int wind_deg;
 
         private string old_file_filepath;
+        private DateTime old_time;
 
         public int snow_or_rain = -1;
 
@@ -153,7 +154,7 @@ namespace dgw {
                                Math.Abs(current_position.Y - last_form_position.Y);
 
                 // If the form shakes too much, show and bounce the PictureBox
-                if (movement > 50) {
+                if (movement > 100) {
                     var now = DateTime.Now;
                     if ((now - last_shake_time).TotalMilliseconds < 500) {
                         var easteregg = new FormEE(this);
@@ -250,9 +251,14 @@ namespace dgw {
             return labels;
         }
 
-        public List<string> create_timelist() {
+        public List<string> create_timelist(bool is_old = false) {
             var temp_list = new List<string>();
             var current_hour = DateTime.Now.Hour;
+
+            if (is_old) {
+                Debug.WriteLine($"{old_time.Hour}");
+                current_hour = old_time.Hour;
+            }
 
             for (int i = 0; i < 24; i++) {
                 int hour = (current_hour + i) % 24;
@@ -349,16 +355,26 @@ namespace dgw {
             }
         }
 
-        public string degrees_to_direction(double degrees) {
+        public string degrees_to_direction(double degrees, bool lang_flag = true) {
 
             // this is not needed because api already returns the degree lower than 360 : x < 360
             //degrees = degrees % 360;
             //if (degrees < 0) degrees += 360;
 
-            string[] compass = {
-            "N", "NE", "E", "SE",
-            "S", "SW", "W", "NW"
-            };//
+
+            string[] compass;
+
+            if (lang_flag) {
+                compass = new string[] {
+                    "N", "NE", "E", "SE",
+                    "S", "SW", "W", "NW"
+                };
+            } else {
+                compass = new string[] {
+                    "K", "KD", "D", "GD",
+                    "G", "GB", "B", "KB"
+                };
+            }
 
             int index = (int)Math.Round(degrees / 45) % 8;
 
@@ -366,9 +382,15 @@ namespace dgw {
 
         }
 
-        private async Task<int> draw_graphs() {
+        private async Task<int> draw_graphs(bool is_old = false) {
 
-            var time_list = this.create_timelist();
+            List<string> time_list = new List<string>();
+            if (!is_old) {
+                time_list = this.create_timelist();
+            } else {
+                time_list = this.create_timelist(is_old);
+            }
+
 
             var chart_list = new List<CartesianChart>();
 
@@ -654,6 +676,7 @@ namespace dgw {
             if (!string.IsNullOrEmpty(selected_timeString)) {
                 if (DateTime.TryParseExact(selected_timeString, "HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out DateTime parsed_time)) {
                     selected_time = parsed_time;
+                    old_time = parsed_time;
                 } else {
                     Debug.WriteLine($"Invalid time format: {selected_timeString}");
                 }
@@ -821,7 +844,11 @@ namespace dgw {
                 (this.first_hourly_rain_precs, this.second_hourly_rain_precs) = (first_hourly_rain_precs, second_hourly_rain_precs);
                 (this.first_hourly_snow_precs, this.second_hourly_snow_precs) = (first_hourly_snow_precs, second_hourly_snow_precs);
 
-                await this.draw_graphs();
+                if (!is_old) {
+                    await this.draw_graphs();
+                } else {
+                    await this.draw_graphs(true);
+                }
 
                 //richTextBox1.AppendText($"\n\nWeather Information:\n");
                 //richTextBox1.AppendText($"Temperature: {weather.current.temp}°C\n");
@@ -837,12 +864,21 @@ namespace dgw {
                 //if (weather.current.rain.oneHour != null) {
                 //    label18.Text = $"Precipitation: {weather.current.rain.oneHour}";
 
-                labelHumidity.Text += $" {weather.current.humidity}%";
-                labelWind.Text += $" {weather.current.wind_speed} m/s";
-                labelWindD.Text += $" {weather.current.wind_deg}° / {wind_deg_string}";
-                labelPressure.Text += $" {weather.current.pressure} hPa";
-                labelVisibility.Text += $" {weather.current.visibility / 1000} km";
-                labelUVI.Text += $" {weather.current.uvi}";
+                if (lang_flag) {
+                    labelHumidity.Text = $"Humidity: {weather.current.humidity}%";
+                    labelWind.Text = $"Wind Speed: {weather.current.wind_speed} m/s";
+                    labelWindD.Text = $"Wind Degree: {weather.current.wind_deg}° / {wind_deg_string}";
+                    labelPressure.Text = $"Pressure: {weather.current.pressure} hPa";
+                    labelVisibility.Text = $"Visibility: {weather.current.visibility / 1000} km";
+                    labelUVI.Text = $"UV Index: {weather.current.uvi}";
+                } else {
+                    labelHumidity.Text = $"Nem Oranı: {weather.current.humidity}%";
+                    labelWind.Text = $"Rüzgar Hızı: {weather.current.wind_speed} m/s";
+                    labelWindD.Text = $"Rüzgar Açısı: {weather.current.wind_deg}° / {wind_deg_string}";
+                    labelPressure.Text = $"Basınç: {weather.current.pressure} hPa";
+                    labelVisibility.Text = $"Görünürlük: {weather.current.visibility / 1000} km";
+                    labelUVI.Text = $"UV Endeksi: {weather.current.uvi}";
+                }
 
                 // this changes the temp values
                 int index = 0;
