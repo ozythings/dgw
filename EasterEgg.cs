@@ -22,7 +22,9 @@ namespace EasterEgg {
             main_form = parent_form; // store reference to MainForm
             InitializeComponent();
             Setup();
-            player = new SoundPlayer($"./easteregg/easteregg.wav");
+            if (File.Exists("./easteregg/easteregg.wav")) {
+                player = new SoundPlayer("./easteregg/easteregg.wav");
+            }
         }
 
         private void Setup() {
@@ -34,7 +36,9 @@ namespace EasterEgg {
             };
             Controls.Add(pictureBox1);
 
-            pictureBox1.Image = Image.FromFile($"./easteregg/easteregg.png");
+            if (File.Exists("./easteregg/easteregg.png")) {
+                pictureBox1.Image = Image.FromFile("./easteregg/easteregg.png");
+            }
 
             exit_button = new Button {
                 Text = "Exit",
@@ -45,7 +49,9 @@ namespace EasterEgg {
             };
 
             exit_button.Click += (s, e) => {
-                player.Stop();
+                if (File.Exists("./easteregg/easteregg.wav")) {
+                    player.Stop();
+                }
                 main_form.Location = this.Location;
                 main_form.Show(); // show MainForm when exiting
                 this.Hide();
@@ -142,7 +148,9 @@ namespace EasterEgg {
 
             pictureBox1.Visible = true;
             is_bouncing = true;
-            player.Play();
+            if (File.Exists("./easteregg/easteregg.wav")) {
+                player.Play();
+            }
             main_form.Hide(); // hide MainForm when FormEE loads
         }
 
