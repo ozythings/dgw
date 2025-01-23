@@ -169,7 +169,9 @@ namespace dgw {
                     var now = DateTime.Now;
                     if ((now - last_shake_time).TotalMilliseconds < 500) {
                         var easteregg = new FormEE(this);
-                        easteregg.Show();
+                        if (File.Exists("./easteregg/easteregg.wav") || File.Exists("./easteregg/easteregg.png")) {
+                            easteregg.Show();
+                        }
                         easteregg_flag = 0;
                     }
 
